@@ -7,6 +7,7 @@ import org.apache.jena.rdfconnection.RDFConnectionRemote;
 import zone.cogni.semanticz.connectors.general.SparqlService;
 import zone.cogni.semanticz.connectors.general.Config;
 import zone.cogni.semanticz.connectors.general.RDFConnectionSparqlService;
+import zone.cogni.semanticz.connectors.utils.Constants;
 
 import java.net.URI;
 
@@ -38,7 +39,7 @@ public class VirtuosoSparqlService extends RDFConnectionSparqlService implements
         .queryEndpoint(config.getUrl())
         .updateEndpoint(config.getUrl())
         .destination(config.getUrl())
-        .acceptHeaderQuery("text/turtle")
+        .acceptHeaderQuery(Constants.TEXT_TURTLE)
         .gspEndpoint(VirtuosoHelper.getVirtuosoGspFromSparql(config.getUrl()))
         .build();
   }
