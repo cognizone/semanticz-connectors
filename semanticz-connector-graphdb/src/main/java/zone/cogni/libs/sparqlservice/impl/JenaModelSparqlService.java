@@ -2,12 +2,11 @@ package zone.cogni.libs.sparqlservice.impl;
 
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.sparql.core.DatasetGraphFactory;
 import org.apache.jena.update.UpdateAction;
 import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateRequest;
-import org.springframework.core.io.FileSystemResource;
-import zone.cogni.libs.jena.utils.JenaUtils;
 import zone.cogni.libs.sparqlservice.SparqlService;
 
 import java.io.File;
@@ -29,7 +28,7 @@ public class JenaModelSparqlService implements SparqlService {
 
     @Override
     public void uploadTtlFile(File file) {
-        Model model = JenaUtils.read(new FileSystemResource(file));
+        Model model = RDFDataMgr.loadModel(file.getAbsolutePath());
         String name = "http://localhost:8080/local/graph/" + file.getName();
         dataset.addNamedModel(name, model);
     }

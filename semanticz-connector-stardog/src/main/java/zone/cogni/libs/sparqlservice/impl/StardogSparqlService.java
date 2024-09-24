@@ -6,7 +6,7 @@ import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.sparql.exec.http.QueryExecutionHTTPBuilder;
-import org.springframework.http.MediaType;
+import zone.cogni.Constants;
 import zone.cogni.libs.core.utils.HttpClientUtils;
 import zone.cogni.libs.jena.utils.JenaUtils;
 import zone.cogni.libs.jena.utils.TripleSerializationFormat;
@@ -23,7 +23,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.function.Function;
 
 import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
-import static zone.cogni.libs.core.utils.HttpClientUtils.execute;
 
 public class StardogSparqlService implements SparqlService {
   private final String endpointUrl;
@@ -67,7 +66,7 @@ public class StardogSparqlService implements SparqlService {
     final HttpRequest request = HttpRequest
         .newBuilder(URI.create(endpointUrl + "/update"))
         .POST(HttpRequest.BodyPublishers.ofString("update=" + URLEncoder.encode(updateQuery, StandardCharsets.UTF_8), StandardCharsets.UTF_8))
-        .header(CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+        .header(CONTENT_TYPE, Constants.APPLICATION_FORM_URLENCODED_VALUE)
         .build();
     HttpClientUtils.execute(request, httpClient);
   }
