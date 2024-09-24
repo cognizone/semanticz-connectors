@@ -3,6 +3,7 @@ assertj = "3.6.1"
 guava = "23.4-jre"
 jena = "4.10.0"
 junit = "5.10.0"
+lombok = "8.10"
 spring = "5.3.31"
 vavr = "0.10.4"
 
@@ -19,3 +20,4 @@ vavr = { module = "io.vavr:vavr", version.ref = "vavr" }
 [bundles]
 
 [plugins]
+lombok = { id = "io.freefair.lombok", version.ref = "lombok" }

@@ -1,43 +1,30 @@
 package zone.cogni.semanticz.connectors.general;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+
+@Getter
+@Setter
+@Accessors(chain = true)
 public class Config {
+  /**
+   * TODO SPARQL 1.1 endpoint URL
+   */
   private String url;
+
+  /**
+   * TODO Username to authenticate to the SPARQL endpoint.
+   */
   private String user;
+
+  /**
+   * TODO Password to authenticate to the SPARQL endpoint.
+   */
   private String password;
+
+  /**
+   * TODO ???
+   */
   private boolean graphCrudUseBasicAuth;
-
-  public Config() {
-  }
-
-  public String getUrl() {
-    return url;
-  }
-
-  public void setUrl(String url) {
-    this.url = url;
-  }
-
-  public String getUser() {
-    return user;
-  }
-
-  public void setUser(String user) {
-    this.user = user;
-  }
-
-  public String getPassword() {
-    return password;
-  }
-
-  public void setPassword(String password) {
-    this.password = password;
-  }
-
-  public boolean isGraphCrudUseBasicAuth() {
-    return graphCrudUseBasicAuth;
-  }
-
-  public void setGraphCrudUseBasicAuth(boolean graphCrudUseBasicAuth) {
-    this.graphCrudUseBasicAuth = graphCrudUseBasicAuth;
-  }
 }

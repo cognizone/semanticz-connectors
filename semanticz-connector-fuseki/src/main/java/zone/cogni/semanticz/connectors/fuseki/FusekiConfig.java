@@ -1,8 +1,15 @@
 package zone.cogni.semanticz.connectors.fuseki;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.apache.commons.lang3.StringUtils;
 import zone.cogni.semanticz.connectors.general.Config;
+import zone.cogni.semanticz.connectors.utils.Constants;
 
+@Getter
+@Setter
+@Accessors(chain = true)
 public class FusekiConfig extends Config {
 
   private String updateUrl;
@@ -22,40 +29,16 @@ public class FusekiConfig extends Config {
     return getServiceUrl(updateUrl, "/update");
   }
 
-  public FusekiConfig setUpdateUrl(String updateUrl) {
-    this.updateUrl = updateUrl;
-    return this;
-  }
-
   public String getQueryUrl() {
     return getServiceUrl(queryUrl, "/query");
-  }
-
-  public FusekiConfig setQueryUrl(String queryUrl) {
-    this.queryUrl = queryUrl;
-    return this;
   }
 
   public String getGraphStoreUrl() {
     return getServiceUrl(graphStoreUrl, "/data");
   }
 
-  public FusekiConfig setGraphStoreUrl(String graphStoreUrl) {
-    this.graphStoreUrl = graphStoreUrl;
-    return this;
-  }
-
   public String getTurtleMimeType() {
-    return StringUtils.defaultIfBlank(overwriteTurtleMimeType, "text/turtle");
-  }
-
-  public String getOverwriteTurtleMimeType() {
-    return overwriteTurtleMimeType;
-  }
-
-  public FusekiConfig setOverwriteTurtleMimeType(String overwriteTurtleMimeType) {
-    this.overwriteTurtleMimeType = overwriteTurtleMimeType;
-    return this;
+    return StringUtils.defaultIfBlank(overwriteTurtleMimeType, Constants.TEXT_TURTLE);
   }
 
   private String getServiceUrl(String fixedUrl, String defaultSuffix) {

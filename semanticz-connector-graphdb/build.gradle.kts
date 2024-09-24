@@ -1,5 +1,6 @@
 plugins {
     id("semanticz.library")
+    alias(libs.plugins.lombok)
 }
 
 project.description = "GraphDB connector"
