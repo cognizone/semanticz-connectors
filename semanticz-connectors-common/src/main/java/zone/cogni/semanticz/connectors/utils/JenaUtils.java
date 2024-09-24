@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import zone.cogni.semanticz.connectors.CognizoneException;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class JenaUtils {
@@ -23,41 +22,6 @@ public class JenaUtils {
   private JenaUtils() {
   }
 
-  public static Model create(Model model, boolean copyPrefixes) {
-    Model newModel = ModelFactory.createDefaultModel();
-    if (copyPrefixes) newModel.setNsPrefixes(model.getNsPrefixMap());
-    newModel.add(model);
-    return newModel;
-  }
-
-  public static Model create(Model... models) {
-    Model result = ModelFactory.createDefaultModel();
-    for (Model model : models) {
-      result.add(model);
-    }
-    return result;
-  }
-
-  public static Model create(Map<String, String> namespaces, Model... models) {
-    Model result = ModelFactory.createDefaultModel();
-    result.setNsPrefixes(namespaces);
-    for (Model model : models) {
-      result.add(model);
-    }
-    return result;
-  }
-
-  public static String toString(Model model) {
-    return toString(model, "RDF/XML");
-  }
-
-  public static String toString(Model model, String language) {
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
-    model.write(out, language);
-
-    return out.toString(StandardCharsets.UTF_8);
-  }
-
   public static byte[] toByteArray(Model model, TripleSerializationFormat tripleSerializationFormat) {
     return toByteArray(model, tripleSerializationFormat.getJenaLanguage());
   }
@@ -68,7 +32,7 @@ public class JenaUtils {
       outputStream.flush();
       return outputStream.toByteArray();
     } catch (IOException e) {
-      throw CognizoneException.rethrow(e);
+      throw new CognizoneException(e);
     }
   }
 
