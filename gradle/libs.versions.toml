@@ -1,19 +1,19 @@
 [versions]
-jena = "4.10.0"
-spring = "5.3.31"
-guava = "23.4-jre"
-junit = "5.10.0"
 assertj = "3.6.1"
+guava = "23.4-jre"
+jena = "4.10.0"
+junit = "5.10.0"
+spring = "5.3.31"
 vavr = "0.10.4"
 
 [libraries]
-spring-web = { module = "org.springframework:spring-web", version.ref = "spring" }
+assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertj" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
 jena-arq = { module = "org.apache.jena:jena-arq", version.ref = "jena" }
 jena-fuseki-main = { module = "org.apache.jena:jena-fuseki-main", version.ref = "jena" }
 jena-rdfconnection = { module = "org.apache.jena:jena-rdfconnection", version.ref = "jena" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
-assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertj" }
+spring-web = { module = "org.springframework:spring-web", version.ref = "spring" }
 vavr = { module = "io.vavr:vavr", version.ref = "vavr" }
 
 [bundles]
