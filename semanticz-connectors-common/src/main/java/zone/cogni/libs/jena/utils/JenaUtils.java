@@ -147,6 +147,25 @@ public class JenaUtils {
     });
   }
 
+  public static void closeQuietly(Iterable<Model> models) {
+    for (Model model : models) {
+      if (model == null) {
+        continue;
+      }
+
+      if (model.isClosed()) {
+        log.warn("Closing an already closed model.");
+        continue;
+      }
+
+      try {
+        model.close();
+      } catch (Exception e) {
+        log.warn("Closing model failed.", e);
+      }
+    }
+  }
+
   private static class InternalRdfErrorHandler implements RDFErrorHandler {
 
     private final String info;

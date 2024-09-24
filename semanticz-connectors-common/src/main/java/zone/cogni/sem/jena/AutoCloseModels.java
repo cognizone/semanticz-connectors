@@ -1,6 +1,7 @@
 package zone.cogni.sem.jena;
 
 import org.apache.jena.rdf.model.Model;
+import zone.cogni.libs.jena.utils.JenaUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
