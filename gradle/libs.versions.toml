@@ -1,7 +1,6 @@
 [versions]
 jena = "4.10.0"
 spring = "5.3.31"
-joda-time = "2.13.0"
 guava = "23.4-jre"
 junit = "5.10.0"
 assertj = "3.6.1"
@@ -9,7 +8,6 @@ vavr = "0.10.4"
 
 [libraries]
 spring-web = { module = "org.springframework:spring-web", version.ref = "spring" }
-joda-time = { module = "joda-time:joda-time", version.ref = "joda-time" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
 jena-arq = { module = "org.apache.jena:jena-arq", version.ref = "jena" }
 jena-fuseki-main = { module = "org.apache.jena:jena-fuseki-main", version.ref = "jena" }
