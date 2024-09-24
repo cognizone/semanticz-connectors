@@ -36,8 +36,6 @@ import java.util.function.Function;
 public class ApacheHttpClientUtils {
 
   private final static Logger log = LoggerFactory.getLogger(ApacheHttpClientUtils.class);
-  public static final String APPLICATION_SPARQL_RESULTS_XML = "application/sparql-results+xml";
-  public static final String TEXT_TURTLE = "text/turtle";
 
   /**
    * Builds a http client given username and password for authentication. Apache HttpClient is
@@ -179,7 +177,7 @@ public class ApacheHttpClientUtils {
 
     try (final CloseableHttpClient httpclient = ApacheHttpClientUtils.buildHttpClient(username,
         password)) {
-      final String acceptHeader = APPLICATION_SPARQL_RESULTS_XML;
+      final String acceptHeader = Constants.APPLICATION_SPARQL_RESULTS_XML;
       final HttpEntityEnclosingRequestBase httpPost = createPost(sparqlServiceUrl, acceptHeader,
           username, password, addBasicAuth);
       httpPost.setEntity(new StringEntity(query, StandardCharsets.UTF_8));
@@ -208,7 +206,7 @@ public class ApacheHttpClientUtils {
 
     try (final CloseableHttpClient httpclient = ApacheHttpClientUtils.buildHttpClient(username,
         password)) {
-      final String acceptHeader = APPLICATION_SPARQL_RESULTS_XML;
+      final String acceptHeader = Constants.APPLICATION_SPARQL_RESULTS_XML;
       final HttpEntityEnclosingRequestBase httpPost = createPost(sparqlServiceUrl, acceptHeader,
           username, password, addBasicAuth);
       httpPost.setEntity(new StringEntity(query, StandardCharsets.UTF_8));
@@ -236,7 +234,7 @@ public class ApacheHttpClientUtils {
 
     try (final CloseableHttpClient httpclient = ApacheHttpClientUtils.buildHttpClient(username,
         password)) {
-      final HttpEntityEnclosingRequestBase httpPost = createPost(sparqlServiceUrl, TEXT_TURTLE,
+      final HttpEntityEnclosingRequestBase httpPost = createPost(sparqlServiceUrl, Constants.TEXT_TURTLE,
           username, password, addBasicAuth);
       httpPost.setEntity(new StringEntity(query, StandardCharsets.UTF_8));
 

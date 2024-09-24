@@ -1,25 +1,22 @@
 package zone.cogni.semanticz.connectors.graphdb;
 
+import lombok.Getter;
+import lombok.Setter;
 import zone.cogni.semanticz.connectors.general.Config;
 
+@Setter
+@Getter
 public class GraphDBConfig extends Config {
 
-  public GraphDBConfig() {}
+  private String repository;
+
+  public GraphDBConfig() {
+  }
 
   public GraphDBConfig(Config config) {
     setUrl(config.getUrl());
     setUser(config.getUser());
     setPassword(config.getPassword());
-  }
-
-  private String repository;
-
-  public String getRepository() {
-    return repository;
-  }
-
-  public void setRepository(String repository) {
-    this.repository = repository;
   }
 
   public String getSparqlEndpoint() {
@@ -33,5 +30,4 @@ public class GraphDBConfig extends Config {
   public String getImportTextEndpoint() {
     return getUrl() + "/rest/data/import/upload/" + getRepository() + "/text";
   }
-
 }
