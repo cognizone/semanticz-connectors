@@ -2,9 +2,8 @@ package zone.cogni.asquare.sparqlservice;
 
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
-import org.springframework.core.io.FileSystemResource;
+import org.apache.jena.riot.RDFDataMgr;
 import zone.cogni.asquare.triplestore.RdfStoreService;
-import zone.cogni.libs.jena.utils.JenaUtils;
 import zone.cogni.libs.sparqlservice.SparqlService;
 
 import java.io.File;
@@ -19,7 +18,7 @@ public class RdfStoreSparqlService implements SparqlService {
 
   @Override
   public void uploadTtlFile(File file) {
-    Model model = JenaUtils.read(new FileSystemResource(file));
+    Model model = RDFDataMgr.loadModel(file.getAbsolutePath());
     rdfStoreService.addData(model);
   }
 

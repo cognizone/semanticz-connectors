@@ -5,7 +5,6 @@ plugins {
 project.description = "Connector utilities"
 
 dependencies {
-    implementation(libs.spring.web)
     implementation(libs.joda.time)
     implementation(libs.guava)
     implementation(libs.jena.arq)

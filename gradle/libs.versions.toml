@@ -8,7 +8,6 @@ assertj = "3.6.1"
 vavr = "0.10.4"
 
 [libraries]
-spring-context = { module = "org.springframework:spring-context", version.ref = "spring" }
 spring-web = { module = "org.springframework:spring-web", version.ref = "spring" }
 joda-time = { module = "joda-time:joda-time", version.ref = "joda-time" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
