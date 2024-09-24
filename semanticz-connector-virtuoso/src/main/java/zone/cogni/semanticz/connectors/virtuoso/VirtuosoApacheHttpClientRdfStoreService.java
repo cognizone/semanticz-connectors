@@ -28,6 +28,7 @@ import org.apache.jena.rdf.model.Model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import zone.cogni.semanticz.connectors.general.RdfStoreService;
 import zone.cogni.semanticz.connectors.utils.ApacheHttpClientUtils;
 import zone.cogni.sem.jena.template.JenaResultSetHandler;
 
@@ -41,7 +42,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Implementation of VirtuosoRdfStoreService backed directly by Apache HttpClient.
  */
-public class VirtuosoApacheHttpClientRdfStoreService implements VirtuosoRdfStoreService {
+public class VirtuosoApacheHttpClientRdfStoreService implements RdfStoreService {
 
   private static final Logger log = LoggerFactory.getLogger(
       VirtuosoApacheHttpClientRdfStoreService.class);

@@ -11,6 +11,8 @@ import org.apache.jena.rdfconnection.RDFConnection;
 import org.apache.jena.rdfconnection.RDFConnectionRemote;
 import zone.cogni.semanticz.connectors.general.Config;
 import zone.cogni.sem.jena.template.JenaResultSetHandler;
+import zone.cogni.semanticz.connectors.general.RdfStoreService;
+import zone.cogni.semanticz.connectors.utils.Constants;
 
 import java.net.URI;
 
@@ -20,7 +22,7 @@ import java.net.URI;
  * To be tested: Should be transactional (autocommit). Might be less performant than
  * {@link VirtuosoApacheHttpClientRdfStoreService}.
  */
-public class VirtuosoRdfConnectionRdfStoreService implements VirtuosoRdfStoreService {
+public class VirtuosoRdfConnectionRdfStoreService implements RdfStoreService {
 
   private final Config config;
 
@@ -45,7 +47,7 @@ public class VirtuosoRdfConnectionRdfStoreService implements VirtuosoRdfStoreSer
   protected RDFConnection getConstructConnection() {
     return RDFConnectionRemote.newBuilder().queryEndpoint(config.getUrl())
         .updateEndpoint(config.getUrl()).destination(config.getUrl())
-        .acceptHeaderQuery("text/turtle")
+        .acceptHeaderQuery(Constants.TEXT_TURTLE)
         .gspEndpoint(VirtuosoHelper.getVirtuosoGspFromSparql(config.getUrl())).build();
   }
 
