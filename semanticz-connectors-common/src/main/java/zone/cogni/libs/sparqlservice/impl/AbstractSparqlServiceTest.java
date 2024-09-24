@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.util.function.Function;
 
 import static org.apache.jena.rdf.model.ResourceFactory.createResource;
-import static org.junit.jupiter.api.Assertions.*;
 
 public abstract class AbstractSparqlServiceTest {
 

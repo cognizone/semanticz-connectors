@@ -19,11 +19,6 @@ public class AutoCloseModels implements AutoCloseable {
     return model;
   }
 
-  public AutoCloseModels addAll(Collection<Model> models) {
-    this.models.addAll(models);
-    return this;
-  }
-
   @Override
   public void close() {
     JenaUtils.closeQuietly(models);
