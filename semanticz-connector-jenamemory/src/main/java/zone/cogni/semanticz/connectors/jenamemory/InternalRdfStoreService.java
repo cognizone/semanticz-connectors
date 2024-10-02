@@ -17,7 +17,11 @@ import javax.annotation.PostConstruct;
 import java.io.File;
 import java.util.function.Supplier;
 
+/**
+ * @deprecated in favour of JenaModelSparqlService
+ */
 @Slf4j
+@Deprecated(forRemoval = true)
 public class InternalRdfStoreService implements RdfStoreService {
 
   @Getter
