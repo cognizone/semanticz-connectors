@@ -8,7 +8,6 @@ project.description = "Jena in-memory connector"
 dependencies {
     implementation(project(":semanticz-connectors-common"))
     implementation(libs.jena.arq)
-    implementation(libs.spring.core)
     implementation(libs.javax.annotation.api)
     testImplementation(libs.junit.jupiter)
 }
