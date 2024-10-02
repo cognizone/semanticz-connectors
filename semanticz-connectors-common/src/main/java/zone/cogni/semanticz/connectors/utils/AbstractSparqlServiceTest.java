@@ -36,6 +36,10 @@ public abstract class AbstractSparqlServiceTest<T extends SparqlService> {
 
   protected abstract void disposeSUT(T sparqlService);
 
+  protected T getSUT() {
+    return sut;
+  }
+
   private static String r(final String localName) {
     return "https://example.org/" + localName;
   }
