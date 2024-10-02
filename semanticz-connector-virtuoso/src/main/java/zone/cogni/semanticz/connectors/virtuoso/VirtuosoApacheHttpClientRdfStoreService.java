@@ -175,7 +175,7 @@ public class VirtuosoApacheHttpClientRdfStoreService implements RdfStoreService 
         log.error("Virtuoso update failed with result {}", errorResponse);
       }
     } catch (IOException ex) {
-      log.error("Virtuoso update failed {}", ex.getMessage());
+      log.error("Virtuoso update failed: {}", ex.getMessage());
       throw new VirtuosoOperationException();
     }
   }
