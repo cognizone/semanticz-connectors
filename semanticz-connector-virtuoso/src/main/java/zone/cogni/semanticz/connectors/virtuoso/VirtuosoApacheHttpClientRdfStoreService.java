@@ -27,7 +27,6 @@ import org.apache.jena.query.QuerySolutionMap;
 import org.apache.jena.rdf.model.Model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import zone.cogni.semanticz.connectors.general.RdfStoreService;
 import zone.cogni.semanticz.connectors.utils.ApacheHttpClientUtils;
 import zone.cogni.sem.jena.template.JenaResultSetHandler;
@@ -36,7 +35,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -117,7 +115,7 @@ public class VirtuosoApacheHttpClientRdfStoreService implements RdfStoreService 
           .onFailure(ex -> log.error("Failed to read response body", ex))
           .getOrElse(StringUtils.EMPTY);
       EntityUtils.consume(response.getEntity());
-      if (!HttpStatus.valueOf(responseCode).is2xxSuccessful()) {
+      if (!is2xxSuccessful(responseCode)) {
         log.error("Virtuoso server sent response with status code {}, with message {} and body {}",
             responseCode, reason, responseBody);
         throw new VirtuosoOperationException(
@@ -170,8 +168,7 @@ public class VirtuosoApacheHttpClientRdfStoreService implements RdfStoreService 
       HttpResponse response = httpClient.execute(httpPost);
       StatusLine statusLine = response.getStatusLine();
 
-      if (!Objects.requireNonNull(HttpStatus.resolve(statusLine.getStatusCode()))
-          .is2xxSuccessful()) {
+      if (!is2xxSuccessful(statusLine.getStatusCode())) {
         log.error("Virtuoso update failed with http status code {}", statusLine.getStatusCode());
         String errorResponse = IOUtils.toString(response.getEntity().getContent(),
             StandardCharsets.UTF_8);
@@ -198,4 +195,7 @@ public class VirtuosoApacheHttpClientRdfStoreService implements RdfStoreService 
     addData(model, graphUri, true);
   }
 
+  private static boolean is2xxSuccessful(final int responseCode) {
+    return responseCode >= 200 && responseCode < 300;
+  }
 }
