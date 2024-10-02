@@ -10,7 +10,6 @@ dependencies {
     implementation(libs.jena.arq)
     implementation(libs.jena.rdfconnection)
     implementation(libs.junit.jupiter)
-    implementation(libs.assertj.core)
 }
 
 tasks.test {

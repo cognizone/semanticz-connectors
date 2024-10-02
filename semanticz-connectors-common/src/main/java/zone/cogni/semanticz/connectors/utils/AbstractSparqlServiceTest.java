@@ -4,7 +4,6 @@ import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.vocabulary.RDFS;
-import org.assertj.core.util.Files;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import zone.cogni.semanticz.connectors.general.SparqlService;
@@ -12,6 +11,8 @@ import zone.cogni.semanticz.connectors.general.SparqlService;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.function.Function;
 
 import static org.apache.jena.rdf.model.ResourceFactory.createResource;
@@ -48,9 +49,9 @@ public abstract class AbstractSparqlServiceTest {
 
   @Test
   public void testUploadTtlFileWorksCorrectly() throws IOException {
-    final File dir = Files.newTemporaryFolder();
+    final Path dir = Files.createTempDirectory("testUploadTtlFileWorksCorrectly-");
     final String fileName = "testUploadTtlFileWorksCorrectly.ttl";
-    final File file = Files.newFile(dir.getPath() + File.separator + fileName);
+    final File file = Files.createTempFile(dir, fileName, "").toFile();
     try {
       final Model model = ModelFactory.createDefaultModel();
       model.add(createResource(r("c1")), RDFS.comment, "comment");
