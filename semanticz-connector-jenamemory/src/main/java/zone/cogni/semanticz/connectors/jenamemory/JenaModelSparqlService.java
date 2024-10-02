@@ -1,4 +1,4 @@
-package zone.cogni.semanticz.connectors.general;
+package zone.cogni.semanticz.connectors.jenamemory;
 
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Model;
@@ -7,6 +7,7 @@ import org.apache.jena.sparql.core.DatasetGraphFactory;
 import org.apache.jena.update.UpdateAction;
 import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateRequest;
+import zone.cogni.semanticz.connectors.general.SparqlService;
 
 import java.io.File;
 import java.util.function.Function;

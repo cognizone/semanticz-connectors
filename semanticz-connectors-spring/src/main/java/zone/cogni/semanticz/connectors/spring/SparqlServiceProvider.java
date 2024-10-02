@@ -6,7 +6,7 @@ import zone.cogni.semanticz.connectors.CognizoneException;
 import zone.cogni.semanticz.connectors.fuseki.FusekiConfig;
 import zone.cogni.semanticz.connectors.fuseki.FusekiSparqlService;
 import zone.cogni.semanticz.connectors.general.Config;
-import zone.cogni.semanticz.connectors.general.JenaModelSparqlService;
+import zone.cogni.semanticz.connectors.jenamemory.JenaModelSparqlService;
 import zone.cogni.semanticz.connectors.general.SparqlService;
 import zone.cogni.semanticz.connectors.graphdb.GraphDBConfig;
 import zone.cogni.semanticz.connectors.graphdb.GraphDBSparqlService;
