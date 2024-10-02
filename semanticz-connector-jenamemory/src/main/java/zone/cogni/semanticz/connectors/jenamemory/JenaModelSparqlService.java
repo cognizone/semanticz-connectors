@@ -2,6 +2,7 @@ package zone.cogni.semanticz.connectors.jenamemory;
 
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.sparql.core.DatasetGraphFactory;
 import org.apache.jena.update.UpdateAction;
@@ -28,9 +29,9 @@ public class JenaModelSparqlService implements SparqlService {
 
     @Override
     public void uploadTtlFile(File file) {
-        Model model = RDFDataMgr.loadModel(file.getAbsolutePath());
-        String name = "http://localhost:8080/local/graph/" + file.getName();
-        dataset.addNamedModel(name, model);
+        final String uri = file.toURI().toString();
+        final Model model = RDFDataMgr.loadModel(uri, Lang.TTL);
+        dataset.addNamedModel(uri, model);
     }
 
     @Override
@@ -63,7 +64,7 @@ public class JenaModelSparqlService implements SparqlService {
     @Override
     public <R> R executeSelectQuery(String query, Function<ResultSet, R> resultHandler) {
         try (QueryExecution queryExecution = QueryExecutionFactory.create(QueryFactory.create(query), getDatasetForSelect())) {
-            return resultHandler.apply(queryExecution.execSelect());
+            return resultHandler.apply(queryExecution.execSelect().materialise());
         }
     }
 

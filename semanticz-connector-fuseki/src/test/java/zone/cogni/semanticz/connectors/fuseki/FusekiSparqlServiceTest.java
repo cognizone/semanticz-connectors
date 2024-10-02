@@ -1,41 +1,27 @@
 package zone.cogni.semanticz.connectors.fuseki;
 
 import org.apache.jena.fuseki.main.FusekiServer;
-import org.apache.jena.riot.RDFDataMgr;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import zone.cogni.semanticz.connectors.general.SparqlService;
+import org.apache.jena.query.DatasetFactory;
 import zone.cogni.semanticz.connectors.utils.AbstractSparqlServiceTest;
 
-import java.net.URISyntaxException;
-import java.util.Objects;
+public class FusekiSparqlServiceTest extends AbstractSparqlServiceTest<FusekiSparqlService> {
 
-public class FusekiSparqlServiceTest extends AbstractSparqlServiceTest {
+  private FusekiServer server;
 
-  private static FusekiServer server;
+  protected FusekiSparqlService createSUT() {
+    server = FusekiServer.create()
+            .loopback(true)
+            .port(12345)
+            .add("/rdf", DatasetFactory.create())
+            .build();
 
-  private static SparqlService sut;
-
-  @BeforeEach
-  public void init() throws URISyntaxException {
-    server = FusekiServer.create().port(12345)
-        .add("/rdf", RDFDataMgr.loadDataset(
-            Objects.requireNonNull(AbstractSparqlServiceTest.class.getResource("/dataset.trig"))
-                .toURI()
-                .toString())).build();
     server.start();
     final FusekiConfig config = new FusekiConfig();
     config.setUrl("http://localhost:12345/rdf");
-    sut = new FusekiSparqlService(config);
+    return new FusekiSparqlService(config);
   }
 
-  @Override
-  protected SparqlService getSUT() {
-    return sut;
-  }
-
-  @AfterEach
-  public void destroy() {
+  protected void disposeSUT(FusekiSparqlService service) {
     server.stop();
   }
 
