@@ -11,7 +11,3 @@ dependencies {
     implementation(libs.jena.fuseki.main)
     testImplementation(libs.junit.jupiter)
 }
-
-tasks.test {
-    useJUnitPlatform()
-}

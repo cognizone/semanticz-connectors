@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.lombok)
 }
 
-project.description = "Spring utilities"
+project.description = "Spring utilities for triple store connectors."
 
 dependencies {
     implementation(project(":semanticz-connectors-common"))
@@ -12,11 +12,6 @@ dependencies {
     implementation(project(":semanticz-connector-stardog"))
     implementation(project(":semanticz-connector-virtuoso"))
 
-    implementation(libs.guava)
     implementation(libs.spring.core)
     implementation(libs.spring.context)
-}
-
-tasks.test {
-    useJUnitPlatform()
 }
