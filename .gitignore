@@ -1,1 +1,3 @@
-/buildSrc/build/generated-sources/kotlin-dsl-plugins/kotlin/Semanticz_libraryPlugin.kt
+.idea
+build
+.gradle
