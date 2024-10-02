@@ -2,8 +2,6 @@ package zone.cogni.semanticz.connectors;
 
 import org.apache.commons.lang3.StringUtils;
 
-import javax.annotation.Nonnull;
-
 public class CognizoneException extends RuntimeException {
 
   private static final long serialVersionUID = 1L;
@@ -16,7 +14,6 @@ public class CognizoneException extends RuntimeException {
     super(cause);
   }
 
-  @Nonnull
   public static <T extends CharSequence> T failIfBlank(T value, String message) {
     boolean test = StringUtils.isBlank(value);
     if (test) {

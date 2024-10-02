@@ -9,7 +9,3 @@ dependencies {
     implementation(libs.jena.arq)
     testImplementation(libs.junit.jupiter)
 }
-
-tasks.test {
-    useJUnitPlatform()
-}

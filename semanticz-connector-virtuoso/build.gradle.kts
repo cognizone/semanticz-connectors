@@ -11,7 +11,3 @@ dependencies {
     implementation(libs.jena.rdfconnection)
     testImplementation(libs.junit.jupiter)
 }
-
-tasks.test {
-    useJUnitPlatform()
-}
