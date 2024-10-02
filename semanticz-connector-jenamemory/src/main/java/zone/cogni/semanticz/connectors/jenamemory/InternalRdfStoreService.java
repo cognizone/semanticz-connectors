@@ -2,6 +2,7 @@ package zone.cogni.semanticz.connectors.jenamemory;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
@@ -12,8 +13,6 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.shared.Lock;
 import org.apache.jena.update.UpdateAction;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import zone.cogni.sem.jena.template.JenaResultSetHandler;
 import zone.cogni.semanticz.connectors.general.RdfStoreService;
 import zone.cogni.semanticz.connectors.utils.JenaUtils;
@@ -22,9 +21,8 @@ import javax.annotation.PostConstruct;
 import java.io.File;
 import java.util.function.Supplier;
 
+@Slf4j
 public class InternalRdfStoreService implements RdfStoreService {
-
-  private static final Logger log = LoggerFactory.getLogger(InternalRdfStoreService.class);
 
   @Getter
   private final Model model;
@@ -43,9 +41,8 @@ public class InternalRdfStoreService implements RdfStoreService {
     this.model = model;
   }
 
-
   @PostConstruct
-  private void init() throws Exception {
+  private void init() {
     if (StringUtils.isNotBlank(savePath)) {
       storeFile = new File(savePath, "store.rdf");
       tempStoreFile = new File(savePath, "temp-store.rdf");
@@ -153,5 +150,4 @@ public class InternalRdfStoreService implements RdfStoreService {
       model.leaveCriticalSection();
     }
   }
-
 }
