@@ -40,6 +40,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Implementation of VirtuosoRdfStoreService backed directly by Apache HttpClient.
  */
+@Deprecated
 public class VirtuosoApacheHttpClientRdfStoreService implements RdfStoreService {
 
   private static final Logger log = LoggerFactory.getLogger(

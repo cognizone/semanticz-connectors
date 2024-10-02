@@ -22,6 +22,7 @@ import java.net.URI;
  * To be tested: Should be transactional (autocommit). Might be less performant than
  * {@link VirtuosoApacheHttpClientRdfStoreService}.
  */
+@Deprecated
 public class VirtuosoRdfConnectionRdfStoreService implements RdfStoreService {
 
   private final Config config;
