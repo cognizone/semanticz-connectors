@@ -1,6 +1,7 @@
 package zone.cogni.semanticz.connectors.graphdb;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpHeaders;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.riot.Lang;
@@ -21,7 +22,6 @@ import java.nio.charset.Charset;
 import java.util.Objects;
 import java.util.function.Function;
 
-import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 import static zone.cogni.semanticz.connectors.utils.HttpClientUtils.execute;
 
 @Disabled("An integration test dependent on a running GraphDB instance. To run it manually, set the GraphDBConfig below properly and run the tests.")
@@ -42,7 +42,7 @@ public class GraphdbSparqlServiceTest extends AbstractSparqlServiceTest {
     final HttpRequest request = HttpRequest
             .newBuilder()
             .PUT(HttpRequest.BodyPublishers.ofString(trig))
-            .header(CONTENT_TYPE, Lang.TRIG.getHeaderString())
+            .header(HttpHeaders.CONTENT_TYPE, Lang.TRIG.getHeaderString())
             .uri(URI.create(config.getSparqlUpdateEndpoint()))
             .build();
     final HttpClient httpClient = HttpClientUtils.createHttpClientBuilder(config.getUser(), config.getPassword()).build();
