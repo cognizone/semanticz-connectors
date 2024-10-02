@@ -6,6 +6,7 @@ import org.apache.jena.query.QuerySolutionMap;
 import org.apache.jena.rdf.model.Model;
 import zone.cogni.sem.jena.template.JenaResultSetHandler;
 
+@Deprecated
 public class SparqlRdfStoreService implements RdfStoreService {
 
   private final SparqlService sparqlService;

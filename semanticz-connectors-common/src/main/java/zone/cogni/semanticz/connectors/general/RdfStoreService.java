@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 
 import static java.util.function.Function.identity;
 
+@Deprecated
 public interface RdfStoreService extends Closeable {
 
   Logger log = LoggerFactory.getLogger(RdfStoreService.class);

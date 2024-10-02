@@ -7,7 +7,9 @@ import org.apache.jena.riot.RDFDataMgr;
 import java.io.File;
 import java.util.function.Function;
 
+@SuppressWarnings("deprecation")
 public class RdfStoreSparqlService implements SparqlService {
+
   private final RdfStoreService rdfStoreService;
 
   public RdfStoreSparqlService(RdfStoreService rdfStoreService) {
