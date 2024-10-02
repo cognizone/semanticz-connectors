@@ -2,6 +2,7 @@ package zone.cogni.semanticz.connectors.utils;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.jena.rdf.model.*;
+import org.apache.jena.riot.RDFLanguages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import zone.cogni.semanticz.connectors.CognizoneException;
@@ -64,27 +65,21 @@ public class JenaUtils {
   }
 
   public static Model readInto(File file, Model model) {
-    return readInto(file, model, getLangByResourceName(file.getName()));
-  }
-
-  public static Model readInto(File file, Model model, String lang) {
     try (InputStream inputStream = new FileInputStream(file)) {
-      return readInto(inputStream, file.getAbsolutePath(), model, lang);
+      final String filePath = file.getAbsolutePath();
+      // TODO simplify
+      RDFReaderI reader = model.getReader(RDFLanguages.filenameToLang(filePath).toString());
+      InternalRdfErrorHandler errorHandler = new InternalRdfErrorHandler(filePath);
+      reader.setErrorHandler(errorHandler);
+      reader.read(model, inputStream, null);
+
+      if (errorHandler.isFailure()) {
+        throw new RuntimeException(errorHandler.getInfo());
+      }
+      return model;
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
-  }
-
-  private static Model readInto(InputStream inputStream, String streamName, Model model, String lang) {
-    RDFReaderI reader = model.getReader(lang);
-    InternalRdfErrorHandler errorHandler = new InternalRdfErrorHandler(streamName);
-    reader.setErrorHandler(errorHandler);
-    reader.read(model, inputStream, null);
-
-    if (errorHandler.isFailure()) {
-      throw new RuntimeException(errorHandler.getInfo());
-    }
-    return model;
   }
 
   public static void write(Model model, File file) {

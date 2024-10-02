@@ -4,11 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.jena.query.Query;
-import org.apache.jena.query.QueryExecution;
-import org.apache.jena.query.QueryExecutionFactory;
-import org.apache.jena.query.QuerySolutionMap;
-import org.apache.jena.query.ResultSet;
+import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.shared.Lock;
@@ -67,16 +63,19 @@ public class InternalRdfStoreService implements RdfStoreService {
   public <R> R executeSelectQuery(Query query, QuerySolutionMap bindings, JenaResultSetHandler<R> resultSetHandler, String context) {
     return executeInReadLock(() -> {
       if (log.isTraceEnabled()) log.trace("Select {} - {} \n{}",
-                                          context == null ? "" : "--- " + context + " --- ",
-                                          bindings,
-                                          query);
+              context == null ? "" : "--- " + context + " --- ",
+              bindings,
+              query);
 
-      try (QueryExecution queryExecution = QueryExecutionFactory.create(query, model, bindings)) {
+      try (QueryExecution queryExecution = QueryExecutionDatasetBuilder
+              .create()
+              .query(query)
+              .model(model)
+              .initialBinding(bindings).build()) {
         ResultSet resultSet = queryExecution.execSelect();
         return resultSetHandler.handle(resultSet);
-      }
-      catch (RuntimeException e) {
-        log.error("Query failed: {}", query);
+      } catch (RuntimeException e) {
+        log.error("SELECT query failed: {}", query);
         throw e;
       }
     });
@@ -85,11 +84,14 @@ public class InternalRdfStoreService implements RdfStoreService {
   @Override
   public boolean executeAskQuery(Query query, QuerySolutionMap bindings) {
     return executeInReadLock(() -> {
-      try (QueryExecution queryExecution = QueryExecutionFactory.create(query, model, bindings)) {
+      try (QueryExecution queryExecution = QueryExecutionDatasetBuilder
+              .create()
+              .query(query)
+              .model(model)
+              .initialBinding(bindings).build()) {
         return queryExecution.execAsk();
-      }
-      catch (RuntimeException e) {
-        log.error("Query failed: {}", query);
+      } catch (RuntimeException e) {
+        log.error("ASK query failed: {}", query);
         throw e;
       }
     });
@@ -98,12 +100,15 @@ public class InternalRdfStoreService implements RdfStoreService {
   @Override
   public Model executeConstructQuery(Query query, QuerySolutionMap bindings) {
     return executeInReadLock(() -> {
-      try (QueryExecution queryExecution = QueryExecutionFactory.create(query, model, bindings)) {
+      try (QueryExecution queryExecution = QueryExecutionDatasetBuilder
+              .create()
+              .query(query)
+              .model(model)
+              .initialBinding(bindings).build()) {
         if (log.isTraceEnabled()) log.trace("Running construct query: \n{}", query);
         return queryExecution.execConstruct();
-      }
-      catch (RuntimeException e) {
-        log.error("Query failed: {}", query);
+      } catch (RuntimeException e) {
+        log.error("CONSTRUCT query failed: {}", query);
         throw e;
       }
     });
@@ -119,8 +124,7 @@ public class InternalRdfStoreService implements RdfStoreService {
           storeFile.delete();
           tempStoreFile.renameTo(storeFile);
         }
-      }
-      catch (Exception e) {
+      } catch (Exception e) {
         throw new RuntimeException("Update SPARQL failed.\n" + updateQuery, e);
       }
     });
@@ -135,8 +139,7 @@ public class InternalRdfStoreService implements RdfStoreService {
     model.enterCriticalSection(Lock.WRITE);
     try {
       executeInLock.run();
-    }
-    finally {
+    } finally {
       model.leaveCriticalSection();
     }
   }
@@ -145,8 +148,7 @@ public class InternalRdfStoreService implements RdfStoreService {
     model.enterCriticalSection(Lock.READ);
     try {
       return executeInLock.get();
-    }
-    finally {
+    } finally {
       model.leaveCriticalSection();
     }
   }
