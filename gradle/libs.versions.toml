@@ -1,5 +1,4 @@
 [versions]
-assertj = "3.6.1"
 guava = "23.4-jre"
 jena = "4.10.0"
 junit = "5.10.0"
@@ -8,7 +7,6 @@ spring = "5.3.31"
 vavr = "0.10.4"
 
 [libraries]
-assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertj" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
 jena-arq = { module = "org.apache.jena:jena-arq", version.ref = "jena" }
 jena-fuseki-main = { module = "org.apache.jena:jena-fuseki-main", version.ref = "jena" }
