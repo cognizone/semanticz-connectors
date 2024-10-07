@@ -12,6 +12,7 @@ The project structure is as follows:
   - `semanticz-connector-stardog` - `SparqlService`-based implementation  
   - `semanticz-connector-jenamemory` - `SparqlService`-based implementation, `RdfStoreService` implementations  
   - `semanticz-connector-virtuoso` - `SparqlService` implementation, `RdfStoreService` implementations
+- `examples` - project exemplifying the usage. 
 
 ## Building
 
@@ -23,16 +24,17 @@ The project structure is as follows:
 
 The library currently supports Java 11, Jena 4, Spring 5 - full list of versions is in [gradle/libs.versions.toml](gradle/libs.versions.toml).
 
-Two scenarios of usage are anticipated.
+Two usage scenarios are anticipated:
+1. Dedicated connector usage, e.g. for gradle:
+```
+implementation("zone.cogni.semanticz:semanticz-connector-fuseki:1.0.0")
+implementation("zone.cogni.semanticz:semanticz-connectors-common:1.0.0")
+```
 
-### Usage in Spring
+2. Spring usage, e.g. for gradle:
+```
+implementation("zone.cogni.semanticz:semanticz-connectors-spring:1.0.0")
+implementation("zone.cogni.semanticz:semanticz-connectors-common:1.0.0")
+```
 
-1. Update your dependencies with Spring support, e.g. for gradle:
-`implementation("zone.cogni.semanticz:semanticz-connectors-spring:1.0.0")`
-
-TBD
-
-### Usage of a dedicated connector in any API
-
-1. Update your dependencies with the support of the required connector, e.g. for gradle:
-`implementation("zone.cogni.semanticz:semanticz-connector-fuseki:1.0.0")`
+For details refer to the example project [example-spring-with-fuseki](examples/example-spring-with-fuseki).
