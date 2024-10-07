@@ -72,6 +72,6 @@ public class SparqlServiceProvider {
   }
 
   private String p(final String base, final String property) {
-    return environment.getProperty(base, property);
+    return environment.getProperty(base + property);
   }
 }
