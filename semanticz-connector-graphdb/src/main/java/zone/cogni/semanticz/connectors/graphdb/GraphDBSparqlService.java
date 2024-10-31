@@ -101,6 +101,6 @@ public class GraphDBSparqlService implements SparqlService {
 
   @Override
   public void dropGraph(String graphUri) {
-    executeUpdateQuery("clear graph <" + graphUri + ">");
+    executeUpdateQuery("CLEAR SILENT GRAPH <" + graphUri + ">");
   }
 }
