@@ -69,7 +69,7 @@ public class GraphDBSparqlService implements SparqlService {
   }
 
   @Override
-  public Model queryForModel(String query) {
+  public Model executeConstructQuery(String query) {
     try (QueryExecution queryExecution = getQueryExecutionBuilder().query(query).build()) {
       return queryExecution.execConstruct();
     }

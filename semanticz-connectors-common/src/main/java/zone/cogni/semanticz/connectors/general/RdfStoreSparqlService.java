@@ -23,7 +23,7 @@ public class RdfStoreSparqlService implements SparqlService {
   }
 
   @Override
-  public Model queryForModel(String query) {
+  public Model executeConstructQuery(String query) {
     return rdfStoreService.executeConstructQuery(query);
   }
 

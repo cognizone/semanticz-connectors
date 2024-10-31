@@ -37,7 +37,7 @@ public abstract class RDFConnectionSparqlService implements SparqlService {
   }
 
   @Override
-  public Model queryForModel(String query) {
+  public Model executeConstructQuery(String query) {
     try (RDFConnection connection = getConstructConnection();
         QueryExecution queryExecution = connection.query(query)) {
       return queryExecution.execConstruct();
