@@ -52,7 +52,7 @@ public abstract class RDFConnectionSparqlService implements SparqlService {
   }
 
   @Override
-  public void upload(Model model, String graphUri) {
+  public void updateGraph(String graphUri, Model model) {
     try (RDFConnection connection = getConnection()) {
       connection.load(graphUri, model);
     }
