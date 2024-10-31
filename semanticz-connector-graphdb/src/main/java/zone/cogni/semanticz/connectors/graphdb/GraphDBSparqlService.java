@@ -52,7 +52,7 @@ public class GraphDBSparqlService implements SparqlService {
   }
 
   @Override
-  public void upload(Model model, String graphUri) {
+  public void updateGraph(String graphUri, Model model) {
     StringWriter writer = new StringWriter();
     model.write(writer, "ttl");
     uploadTtl(graphUri, writer.toString());
