@@ -129,6 +129,6 @@ public class FusekiSparqlService implements SparqlService {
 
   @Override
   public void dropGraph(String graphUri) {
-    executeUpdateQuery("drop graph <" + graphUri + ">");
+    executeUpdateQuery("drop silent graph <" + graphUri + ">");
   }
 }

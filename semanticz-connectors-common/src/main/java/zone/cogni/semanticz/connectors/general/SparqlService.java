@@ -46,6 +46,14 @@ public interface SparqlService {
 
   <R> R executeSelectQuery(String query, Function<ResultSet, R> resultHandler);
 
+  /**
+   * Deletes all triples from the named graph with the given URI.
+   * It might also delete the graph itself in case the store supports it.
+   *
+   * This method does not fail even if the named graph does not exist.
+   *
+   * @param graphUri named graph URI
+   */
   void dropGraph(String graphUri);
 
   /**
