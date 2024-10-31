@@ -28,8 +28,16 @@ import java.util.function.Function;
 
 import static org.apache.jena.rdf.model.ResourceFactory.createResource;
 
+/**
+ * Abstract test class for testing implementations of {@link SparqlService}.
+ *
+ * @param <T> the SparqlService implementation to test
+ */
 public abstract class AbstractSparqlServiceTest<T extends SparqlService> {
 
+  /**
+   * SparqlService under test.
+   */
   private T sut;
 
   protected abstract T createSUT();
@@ -161,7 +169,7 @@ public abstract class AbstractSparqlServiceTest<T extends SparqlService> {
 
   @Test
   public void testQueryForModelReturnsResultsFromRespectiveGraphs() {
-    final Model model = sut.queryForModel("CONSTRUCT { ?s ?p ?o } WHERE { GRAPH ?g { ?s ?p ?o } FILTER (?g in (<https://example.org/m1>, <https://example.org/m2>)) }");
+    final Model model = sut.executeConstructQuery("CONSTRUCT { ?s ?p ?o } WHERE { GRAPH ?g { ?s ?p ?o } FILTER (?g in (<https://example.org/m1>, <https://example.org/m2>)) }");
     Assertions.assertEquals(2, model.size());
   }
 }
