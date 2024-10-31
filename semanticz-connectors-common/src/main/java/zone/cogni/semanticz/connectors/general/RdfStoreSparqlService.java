@@ -38,7 +38,7 @@ public class RdfStoreSparqlService implements SparqlService {
   }
 
   @Override
-  public void upload(Model model, String graphUri) {
+  public void updateGraph(String graphUri, Model model) {
     rdfStoreService.addData(model);
   }
 
