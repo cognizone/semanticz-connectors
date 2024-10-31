@@ -41,7 +41,7 @@ public class JenaModelSparqlService implements SparqlService {
     }
 
     @Override
-    public void upload(Model model, String graphUri) {
+    public void updateGraph(String graphUri, Model model) {
         dataset.addNamedModel(graphUri, model);
     }
 
