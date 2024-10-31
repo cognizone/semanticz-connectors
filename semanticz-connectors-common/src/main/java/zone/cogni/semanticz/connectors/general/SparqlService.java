@@ -6,6 +6,11 @@ import org.apache.jena.rdf.model.Model;
 import java.io.File;
 import java.util.function.Function;
 
+/**
+ * This is a generic interface for accessing a SPARQL-capable service to:
+ * - query (ASK/SELECT/CONSTRUCT)
+ * - update (uploading a Jena Model, update/replace/drop a graph)
+ */
 public interface SparqlService {
 
   void uploadTtlFile(File file);
@@ -35,7 +40,9 @@ public interface SparqlService {
    * Please use {@link #updateGraph(String, Model)}.
    */
   @Deprecated
-  void upload(Model model, String graphUri);
+  default void upload(Model model, String graphUri) {
+    updateGraph(graphUri, model);
+  }
 
   <R> R executeSelectQuery(String query, Function<ResultSet, R> resultHandler);
 
@@ -49,9 +56,7 @@ public interface SparqlService {
    * @param graphUri uri of graph being updated
    * @param model model which is being added to the current graph
    */
-  default void updateGraph(String graphUri, Model model) {
-    upload(model, graphUri);
-  }
+  void updateGraph(String graphUri, Model model);
 
   /**
    * <p>
