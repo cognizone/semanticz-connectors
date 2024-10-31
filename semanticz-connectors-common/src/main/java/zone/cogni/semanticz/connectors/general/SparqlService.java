@@ -10,7 +10,21 @@ public interface SparqlService {
 
   void uploadTtlFile(File file);
 
-  Model queryForModel(String query);
+  /**
+   * @deprecated use {@link #executeConstructQuery(String)} instead
+   */
+  @Deprecated(forRemoval = true)
+  default Model queryForModel(String query) {
+    return executeConstructQuery(query);
+  }
+
+  /**
+   * Executes SPARQL CONSTRUCT query and returns the result as a Model.
+   *
+   * @param constructQuery SPARQL CONSTRUCT query to execute
+   * @return the Model with the output of the query
+   */
+  Model executeConstructQuery(String constructQuery);
 
   void executeUpdateQuery(String updateQuery);
 

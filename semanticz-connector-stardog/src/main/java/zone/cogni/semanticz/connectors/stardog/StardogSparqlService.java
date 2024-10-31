@@ -53,7 +53,7 @@ public class StardogSparqlService implements SparqlService {
   }
 
   @Override
-  public Model queryForModel(String query) {
+  public Model executeConstructQuery(String query) {
     try (QueryExecution queryExecution = getQueryExecutionBuilder().query(query).build()) {
       // jena adds empty defaultGraph param to URL because defaultGraph is null but is a "value", stardog doesn't like that
       // TODO check with empty default graph ((QueryEngineHTTP) queryExecution).setDefaultGraphURIs(Collections.emptyList());

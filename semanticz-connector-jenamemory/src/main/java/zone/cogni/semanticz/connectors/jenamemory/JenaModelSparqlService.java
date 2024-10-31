@@ -35,13 +35,6 @@ public class JenaModelSparqlService implements SparqlService {
     }
 
     @Override
-    public Model queryForModel(String query) {
-        try (QueryExecution queryExecution = QueryExecutionFactory.create(QueryFactory.create(query), dataset)) {
-            return queryExecution.execConstruct();
-        }
-    }
-
-    @Override
     public void executeUpdateQuery(String updateQuery) {
         UpdateRequest request = UpdateFactory.create(updateQuery);
         UpdateAction.execute(request, dataset);
