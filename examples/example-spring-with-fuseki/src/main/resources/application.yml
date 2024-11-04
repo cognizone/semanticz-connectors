@@ -1,0 +1,6 @@
+endpoint:
+  fuseki:
+    type: fuseki
+    url: http://localhost:3030
+    user: admin
+    password: adminpass
