@@ -31,10 +31,13 @@ scmVersion {
     }
     versionIncrementer("incrementPatch") // Increment the patch version
 
-    branchVersionIncrementer {
-        branchPatterns = listOf("*")
+    branches {
+        branch { branchName, _ ->
+            ignoreBranch = true
+        }
     }
 }
+
 
 // Set the project version from scmVersion
 version = scmVersion.version
