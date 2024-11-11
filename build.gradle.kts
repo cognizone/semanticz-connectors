@@ -2,11 +2,12 @@ plugins {
     `java-library`
     pmd
     jacoco
-    id("pl.allegro.tech.build.axion-release") version "1.13.3"
     id("io.freefair.lombok") version "8.10"
     id("maven-publish")
     id("signing")
 }
+
+apply(plugin = "pl.allegro.tech.build.axion-release")
 
 
 repositories {
