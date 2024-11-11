@@ -24,16 +24,15 @@ scmVersion {
     tag.apply {
         prefix = "v"
         versionSeparator = ""
-        branchPrefix = mapOf(
-            "release/.*" to "release-v",
-            "hotfix/.*" to "hotfix-v"
-        )
     }
     nextVersion.apply {
         suffix = "SNAPSHOT"
         separator = "-"
     }
     versionIncrementer("incrementPatch") // Increment the patch version
+    with {
+        ignoreBranchName = true
+    }
 }
 
 // Set the project version from scmVersion
