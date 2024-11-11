@@ -1,4 +1,5 @@
-import pl.allegro.tech.build.axion.release.domain.VersionConfig
+
+
 plugins {
     `java-library`
     `maven-publish`
@@ -26,31 +27,23 @@ project.extensions.configure(JavaPluginExtension::class.java) {
 
 
 
+// Configure the axion-release plugin
 scmVersion {
-    tag {
+    tag.apply {
         prefix = "v"
         versionSeparator = ""
-        branchPrefix = mapOf(
-            "release/.*" to "release-v",
-            "hotfix/.*" to "hotfix-v"
-        )
+        branchPrefix.set("release/.*", "release-v")
+        branchPrefix.set("hotfix/.*", "hotfix-v")
     }
-    nextVersion {
+    nextVersion.apply {
         suffix = "SNAPSHOT"
         separator = "-"
     }
-    versionIncrementer("incrementPatch")
-
-    // Use nextVersion's suffix and separator in versionCreator
-    versionCreator = { version, position ->
-        val suffix = if (position == VersionConfig.Position.SNAPSHOT) {
-            "${scmVersion.nextVersion.separator}${scmVersion.nextVersion.suffix}"
-        } else {
-            ""
-        }
-        "$version$suffix"
-    }
+    versionIncrementer("incrementPatch") // Increment the patch version
 }
+
+// Set the project version from scmVersion
+version = scmVersion.version
 
 
 
