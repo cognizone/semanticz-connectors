@@ -1,3 +1,6 @@
+import pl.allegro.tech.build.axion.release.domain.VersionCreator
+import pl.allegro.tech.build.axion.release.domain.VersionPosition
+
 
 plugins {
     `java-library`
@@ -32,9 +35,9 @@ scmVersion {
     versionIncrementer("incrementPatch") // Increment the patch version
 
     // Define a custom version creator to exclude branch names
-    versionCreator = { version: String, _: pl.allegro.tech.build.axion.release.domain.VersionPosition ->
+    versionCreator.set(VersionCreator { version: String, _: VersionPosition ->
         version
-    }
+    })
 }
 
 
