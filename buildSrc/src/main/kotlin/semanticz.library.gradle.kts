@@ -1,5 +1,3 @@
-import pl.allegro.tech.build.axion.release.domain.VersionConfig
-
 
 plugins {
     `java-library`
@@ -32,17 +30,11 @@ scmVersion {
     tag {
         prefix.set("v")
         versionSeparator.set("")
-        branchPrefix.put("release/.*", "release-v")
-        branchPrefix.put("hotfix/.*", "hotfix-v")
     }
     nextVersion {
         suffix.set("SNAPSHOT")
         separator.set("-")
     }
-    versionIncrementer("incrementPatch") // Increment the patch version
-
-    // Set the versionCreator to 'versionWithSuffix' to exclude branch name
-    versionCreator.set("versionWithSuffix")
 }
 
 // Set the project version from scmVersion
