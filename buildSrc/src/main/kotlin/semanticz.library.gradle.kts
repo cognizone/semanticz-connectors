@@ -23,23 +23,19 @@ project.extensions.configure(JavaPluginExtension::class.java) {
     withSourcesJar()
 }
 
-version = scmVersion.version
-
 scmVersion {
-    tag.apply {
-        prefix = "v"
-        versionSeparator = ""
-        branchPrefix = mapOf(
-            "release/.*" to "release-v",
-            "hotfix/.*" to "hotfix-v"
-        )
+    tag {
+        prefix.set("v")
+        versionSeparator.set("")
     }
-    nextVersion.apply {
-        suffix = "SNAPSHOT"
-        separator = "-"
+    nextVersion {
+        suffix.set("SNAPSHOT")
+        separator.set("-")
     }
-    versionIncrementer("incrementPatch")
 }
+
+// Set the project version from scmVersion
+version = scmVersion.version
 
 tasks.withType<JavaCompile> {
     sourceCompatibility = JavaVersion.VERSION_11.toString()
@@ -111,19 +107,33 @@ publishing {
     }
 
     repositories {
-        if (project.hasProperty("publishToMavenCentral")) {
-            maven {
-                credentials {
-                    username = System.getProperty("ossrh.username")
-                    password = System.getProperty("ossrh.password")
+            // Cognizone Nexus repository
+            if (project.hasProperty("publishToCognizoneNexus")) {
+                maven {
+                    credentials {
+                        username = System.getProperty("nexus.username")
+                        password = System.getProperty("nexus.password")
+                    }
+                    val releasesRepoUrl = "${System.getProperty("nexus.url")}/repository/cognizone-release"
+                    val snapshotsRepoUrl = "${System.getProperty("nexus.url")}/repository/cognizone-snapshot"
+                    url = uri(if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl)
+                    isAllowInsecureProtocol = true
                 }
-                val stagingRepoUrl =
-                    "${System.getProperty("ossrh.url")}/service/local/staging/deploy/maven2"
-                val snapshotsRepoUrl = "${System.getProperty("ossrh.url")}/content/repositories/snapshots"
-                url = uri(if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else stagingRepoUrl)
+            }
+
+            // Maven Central repository
+            if (project.hasProperty("publishToMavenCentral")) {
+                maven {
+                    credentials {
+                        username = System.getProperty("ossrh.username")
+                        password = System.getProperty("ossrh.password")
+                    }
+                    val stagingRepoUrl = "${System.getProperty("ossrh.url")}/service/local/staging/deploy/maven2"
+                    val snapshotsRepoUrl = "${System.getProperty("ossrh.url")}/content/repositories/snapshots"
+                    url = uri(if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else stagingRepoUrl)
+                }
             }
         }
-    }
 }
 
 tasks.withType<Javadoc> {

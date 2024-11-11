@@ -1,6 +1,14 @@
-dependencyResolutionManagement {
+pluginManagement {
     repositories {
+        gradlePluginPortal()
         mavenCentral()
+    }
+    resolutionStrategy {
+        eachPlugin {
+            if (requested.id.id == "pl.allegro.tech.build.axion-release") {
+                useVersion("1.14.0")
+            }
+        }
     }
 }
 
