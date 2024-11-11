@@ -6,7 +6,7 @@ pluginManagement {
     resolutionStrategy {
         eachPlugin {
             if (requested.id.id == "pl.allegro.tech.build.axion-release") {
-                useVersion("1.14.0")
+                useVersion("1.18.6")
             }
         }
     }
