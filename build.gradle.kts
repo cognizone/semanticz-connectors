@@ -30,12 +30,10 @@ scmVersion {
         separator = "-"
     }
     versionIncrementer("incrementPatch") // Increment the patch version
-    
-    // Custom version creator that ignores branch name
-    versionCreator("versionWithBranch", mapOf("ignoreBranchName" to true))
+
+    // Set version creator that ignores branch name
+    versionCreator { version, _ -> version.withoutBranch() }
 }
-
-
 
 // Set the project version from scmVersion
 version = scmVersion.version
