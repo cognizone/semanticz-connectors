@@ -31,8 +31,9 @@ scmVersion {
     }
     versionIncrementer("incrementPatch") // Increment the patch version
 
-    // Set ignoreBranchName to true to avoid including branch names in versions
-    ignoreBranchName.set(true)
+    branchVersionIncrementer {
+        branchPatterns = listOf("*")
+    }
 }
 
 // Set the project version from scmVersion
