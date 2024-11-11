@@ -21,10 +21,6 @@ group = "zone.cogni.semanticz"
 
 
 scmVersion {
-    version {
-        initialVersion = "1.0.0" // Set your desired initial version here
-    }
-
     tag {
         prefix = "v"
         versionSeparator = ""
