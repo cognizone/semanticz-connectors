@@ -27,17 +27,16 @@ project.extensions.configure(JavaPluginExtension::class.java) {
 
 
 
-// Configure the axion-release plugin
 scmVersion {
-    tag.apply {
-        prefix = "v"
-        versionSeparator = ""
-        branchPrefix.set("release/.*", "release-v")
-        branchPrefix.set("hotfix/.*", "hotfix-v")
+    tag {
+        prefix.set("v")
+        versionSeparator.set("")
+        branchPrefix.put("release/.*", "release-v")
+        branchPrefix.put("hotfix/.*", "hotfix-v")
     }
-    nextVersion.apply {
-        suffix = "SNAPSHOT"
-        separator = "-"
+    nextVersion {
+        suffix.set("SNAPSHOT")
+        separator.set("-")
     }
     versionIncrementer("incrementPatch") // Increment the patch version
 }
@@ -45,9 +44,6 @@ scmVersion {
 // Set the project version from scmVersion
 version = scmVersion.version
 
-
-
-version = scmVersion.version
 
 tasks.withType<JavaCompile> {
     sourceCompatibility = JavaVersion.VERSION_11.toString()
