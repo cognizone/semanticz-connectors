@@ -39,7 +39,11 @@ scmVersion {
         separator = "-"
     }
     versionIncrementer("incrementPatch")
+    
+    // Add this line to ignore the branch name in the version
+    ignoreBranchNameInVersion = true
 }
+
 
 version = scmVersion.version
 
