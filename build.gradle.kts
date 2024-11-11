@@ -5,7 +5,6 @@ plugins {
     id("io.freefair.lombok") version "8.10"
     id("maven-publish")
     id("signing")
-    id("pl.allegro.tech.build.axion-release") version "1.13.3"
 }
 
 
@@ -17,22 +16,7 @@ repositories {
 group = "zone.cogni.semanticz"
 
 
-version = scmVersion.version
-scmVersion {
-    tag.apply {
-        prefix = "v"
-        versionSeparator = ""
-        branchPrefix = mapOf(
-            "release/.*" to "release-v",
-            "hotfix/.*" to "hotfix-v"
-        )
-    }
-    nextVersion.apply {
-        suffix = "SNAPSHOT"
-        separator = "-"
-    }
-    versionIncrementer("incrementPatch") // Increment the patch version
-}
+version = project.version
 
 publishing {
     publications {
