@@ -31,8 +31,10 @@ scmVersion {
     }
     versionIncrementer("incrementPatch") // Increment the patch version
     
-    ignoreBranchName = true // Directly set ignoreBranchName here
+    // Custom version creator that ignores branch name
+    versionCreator("versionWithBranch", mapOf("ignoreBranchName" to true))
 }
+
 
 
 // Set the project version from scmVersion
