@@ -1,4 +1,3 @@
-
 plugins {
     `java-library`
     `maven-publish`
@@ -24,8 +23,6 @@ project.extensions.configure(JavaPluginExtension::class.java) {
     withSourcesJar()
 }
 
-
-
 scmVersion {
     tag {
         prefix.set("v")
@@ -39,7 +36,6 @@ scmVersion {
 
 // Set the project version from scmVersion
 version = scmVersion.version
-
 
 tasks.withType<JavaCompile> {
     sourceCompatibility = JavaVersion.VERSION_11.toString()
