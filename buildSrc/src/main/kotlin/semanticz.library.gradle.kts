@@ -1,3 +1,4 @@
+import pl.allegro.tech.build.axion.release.domain.VersionConfig
 plugins {
     `java-library`
     `maven-publish`
@@ -26,7 +27,7 @@ project.extensions.configure(JavaPluginExtension::class.java) {
 
 
 scmVersion {
-    tag.apply {
+    tag {
         prefix = "v"
         versionSeparator = ""
         branchPrefix = mapOf(
@@ -34,15 +35,20 @@ scmVersion {
             "hotfix/.*" to "hotfix-v"
         )
     }
-    nextVersion.apply {
+    nextVersion {
         suffix = "SNAPSHOT"
         separator = "-"
     }
     versionIncrementer("incrementPatch")
-    
-    // Move the property inside the 'version' block
-    version {
-        ignoreBranchNameInVersion = true
+
+    // Use nextVersion's suffix and separator in versionCreator
+    versionCreator = { version, position ->
+        val suffix = if (position == VersionConfig.Position.SNAPSHOT) {
+            "${scmVersion.nextVersion.separator}${scmVersion.nextVersion.suffix}"
+        } else {
+            ""
+        }
+        "$version$suffix"
     }
 }
 
