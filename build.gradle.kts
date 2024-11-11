@@ -1,3 +1,7 @@
+import pl.allegro.tech.build.axion.release.domain.hooks.HooksConfig
+import pl.allegro.tech.build.axion.release.domain.scm.ScmPosition
+import pl.allegro.tech.build.axion.release.domain.version.VersionConfig
+
 plugins {
     `java-library`
     pmd
@@ -7,7 +11,7 @@ plugins {
     id("signing")
 }
 
-apply(plugin = "pl.allegro.tech.build.axion-release")
+
 
 
 repositories {
@@ -19,7 +23,7 @@ group = "zone.cogni.semanticz"
 
 
 // Configure the axion-release plugin
-scmVersion {
+configure<VersionConfig> {
     tag.apply {
         prefix = "v"
         versionSeparator = ""
@@ -30,11 +34,13 @@ scmVersion {
         suffix = "SNAPSHOT"
         separator = "-"
     }
-    versionIncrementer("incrementPatch") // Increment the patch version
+    versionIncrementer("incrementPatch")
 }
 
+project.version = extensions.getByType<VersionConfig>().version.toString()
+
 // Set the project version from scmVersion
-version = scmVersion.version
+version = project.version
 
 publishing {
     publications {
