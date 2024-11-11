@@ -3,7 +3,6 @@ plugins {
     pmd
     jacoco
     id("io.freefair.lombok") version "8.10"
-    id("org.owasp.dependencycheck") version "10.0.3"
     id("maven-publish")
     id("signing")
     id("pl.allegro.tech.build.axion-release") version "1.13.3"
