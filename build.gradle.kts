@@ -1,6 +1,3 @@
-import pl.allegro.tech.build.axion.release.domain.VersionCreator
-import pl.allegro.tech.build.axion.release.domain.VersionPosition
-
 
 plugins {
     `java-library`
@@ -24,6 +21,8 @@ group = "zone.cogni.semanticz"
 
 
 scmVersion {
+    initialVersion = '1.0.0' // Set your desired initial version here
+
     tag {
         prefix = "v"
         versionSeparator = ""
@@ -32,14 +31,7 @@ scmVersion {
         suffix = "SNAPSHOT"
         separator = "-"
     }
-    versionIncrementer("incrementPatch") // Increment the patch version
-
-    // Define a custom version creator to exclude branch names
-    versionCreator.set(VersionCreator { version: String, _: VersionPosition ->
-        version
-    })
 }
-
 
 // Set the project version from scmVersion
 version = scmVersion.version
