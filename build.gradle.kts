@@ -21,20 +21,19 @@ group = "zone.cogni.semanticz"
 
 
 scmVersion {
-    tag.apply {
+    tag {
         prefix = "v"
         versionSeparator = ""
     }
-    nextVersion.apply {
+    nextVersion {
         suffix = "SNAPSHOT"
         separator = "-"
     }
     versionIncrementer("incrementPatch") // Increment the patch version
 
-    branches {
-        branch { branchName, _ ->
-            ignoreBranch = true
-        }
+    // Define a custom version creator to exclude branch names
+    versionCreator = { version: String, _: pl.allegro.tech.build.axion.release.domain.VersionPosition ->
+        version
     }
 }
 
