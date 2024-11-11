@@ -21,7 +21,7 @@ group = "zone.cogni.semanticz"
 
 
 // Configure the axion-release plugin
-configure<VersionConfig> {
+scmVersion {
     tag.apply {
         prefix = "v"
         versionSeparator = ""
@@ -32,13 +32,11 @@ configure<VersionConfig> {
         suffix = "SNAPSHOT"
         separator = "-"
     }
-    versionIncrementer("incrementPatch")
+    versionIncrementer("incrementPatch") // Increment the patch version
 }
 
-project.version = extensions.getByType<VersionConfig>().version.toString()
-
 // Set the project version from scmVersion
-version = project.version
+version = scmVersion.versionn
 
 publishing {
     publications {
