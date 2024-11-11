@@ -40,9 +40,12 @@ scmVersion {
     }
     versionIncrementer("incrementPatch")
     
-    // Add this line to ignore the branch name in the version
-    ignoreBranchNameInVersion = true
+    // Move the property inside the 'version' block
+    version {
+        ignoreBranchNameInVersion = true
+    }
 }
+
 
 
 version = scmVersion.version
