@@ -30,10 +30,10 @@ scmVersion {
         separator = "-"
     }
     versionIncrementer("incrementPatch") // Increment the patch version
-    with {
-        ignoreBranchName = true
-    }
+    
+    ignoreBranchName = true // Directly set ignoreBranchName here
 }
+
 
 // Set the project version from scmVersion
 version = scmVersion.version
