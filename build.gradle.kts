@@ -34,6 +34,12 @@ scmVersion {
 // Set the project version from scmVersion
 version = scmVersion.version
 
+allprojects { 
+  // ...
+  project.version = rootProject.version
+  // ...
+}
+
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {
