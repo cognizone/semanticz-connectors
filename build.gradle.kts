@@ -20,13 +20,14 @@ repositories {
 group = "zone.cogni.semanticz"
 
 
-// Configure the axion-release plugin
 scmVersion {
     tag.apply {
         prefix = "v"
         versionSeparator = ""
-        branchPrefix.set("release/.*", "release-v")
-        branchPrefix.set("hotfix/.*", "hotfix-v")
+        branchPrefix = mapOf(
+            "release/.*" to "release-v",
+            "hotfix/.*" to "hotfix-v"
+        )
     }
     nextVersion.apply {
         suffix = "SNAPSHOT"
@@ -36,7 +37,7 @@ scmVersion {
 }
 
 // Set the project version from scmVersion
-version = scmVersion.versionn
+version = scmVersion.version
 
 publishing {
     publications {
