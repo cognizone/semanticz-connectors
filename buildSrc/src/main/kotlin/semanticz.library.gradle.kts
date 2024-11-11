@@ -23,7 +23,7 @@ project.extensions.configure(JavaPluginExtension::class.java) {
     withSourcesJar()
 }
 
-version = scmVersion.version
+
 
 scmVersion {
     tag.apply {
@@ -40,6 +40,8 @@ scmVersion {
     }
     versionIncrementer("incrementPatch")
 }
+
+version = scmVersion.version
 
 tasks.withType<JavaCompile> {
     sourceCompatibility = JavaVersion.VERSION_11.toString()
