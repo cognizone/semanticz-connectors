@@ -1,3 +1,4 @@
+import pl.allegro.tech.build.axion.release.domain.VersionConfig
 
 
 plugins {
@@ -39,6 +40,9 @@ scmVersion {
         separator.set("-")
     }
     versionIncrementer("incrementPatch") // Increment the patch version
+
+    // Set the versionCreator to 'versionWithSuffix' to exclude branch name
+    versionCreator.set("versionWithSuffix")
 }
 
 // Set the project version from scmVersion
