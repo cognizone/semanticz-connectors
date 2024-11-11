@@ -1,6 +1,3 @@
-import pl.allegro.tech.build.axion.release.domain.hooks.HooksConfig
-import pl.allegro.tech.build.axion.release.domain.scm.ScmPosition
-import pl.allegro.tech.build.axion.release.domain.version.VersionConfig
 
 plugins {
     `java-library`
@@ -9,6 +6,7 @@ plugins {
     id("io.freefair.lombok") version "8.10"
     id("maven-publish")
     id("signing")
+    id("pl.allegro.tech.build.axion-release")
 }
 
 
