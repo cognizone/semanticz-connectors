@@ -2,7 +2,6 @@ package zone.cogni.semanticz.connectors.spring;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import zone.cogni.semanticz.connectors.CognizoneException;
 import zone.cogni.semanticz.connectors.fuseki.FusekiConfig;
 import zone.cogni.semanticz.connectors.fuseki.FusekiSparqlService;
 import zone.cogni.semanticz.connectors.general.Config;
@@ -26,9 +25,11 @@ public class SparqlServiceProvider {
   public SparqlService createSparqlService(Enum enumValue) {
     String base = configPrefix + enumValue.name() + ".";
 
-    String type = CognizoneException.failIfBlank(environment.getProperty(base + "type"), "Type property not found: " + base + "type");
-
-    switch (type) {
+    String value = environment.getProperty(base + "type");
+    if (value == null || value.isBlank()) {
+      throw new RuntimeException("Type property not found: " + base + "type");
+    }
+    switch (value) {
       case "virtuoso":
         return new VirtuosoSparqlService(createDefaultConfig(base));
       case "fuseki":
@@ -40,7 +41,7 @@ public class SparqlServiceProvider {
       case "stardog":
         return new StardogSparqlService(createDefaultConfig(base));
       default:
-        throw new CognizoneException("SparqlService type " + type + " unknown.");
+        throw new RuntimeException(String.format("SparqlService type %s unknown.", value));
     }
   }
 
