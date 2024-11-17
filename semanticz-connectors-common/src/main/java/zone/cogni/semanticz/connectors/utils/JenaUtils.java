@@ -4,7 +4,6 @@ import org.apache.jena.rdf.model.*;
 import org.apache.jena.riot.RDFLanguages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import zone.cogni.semanticz.connectors.CognizoneException;
 
 import java.io.*;
 import java.util.*;
@@ -33,7 +32,7 @@ public class JenaUtils {
       outputStream.flush();
       return outputStream.toByteArray();
     } catch (IOException e) {
-      throw new CognizoneException(e);
+      throw new RuntimeException(e);
     }
   }
 
