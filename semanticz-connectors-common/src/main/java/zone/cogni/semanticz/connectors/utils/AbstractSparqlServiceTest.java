@@ -172,4 +172,22 @@ public abstract class AbstractSparqlServiceTest<T extends SparqlService> {
     final Model model = sut.executeConstructQuery("CONSTRUCT { ?s ?p ?o } WHERE { GRAPH ?g { ?s ?p ?o } FILTER (?g in (<https://example.org/m1>, <https://example.org/m2>)) }");
     Assertions.assertEquals(2, model.size());
   }
+
+  @Test
+  public void testIsEmptyOfNamedGraphReturnsTrueWheneverNoTripleExistsThere() {
+    final boolean isEmpty = sut.isEmpty("https://example.org/m3");
+    Assertions.assertTrue(isEmpty);
+  }
+
+  @Test
+  public void testIsEmptyOfNamedGraphReturnsTrueWheneverATripleExists() {
+    final boolean isEmpty = sut.isEmpty("https://example.org/m2");
+    Assertions.assertFalse(isEmpty);
+  }
+
+  @Test
+  public void testIsEmptyOfDefaultGraphReturnsTrueWheneverNoTripleExistsThere() {
+    final boolean isEmpty = sut.isEmpty(null );
+    Assertions.assertTrue(isEmpty);
+  }
 }
