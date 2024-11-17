@@ -84,12 +84,6 @@ public class FusekiSparqlService implements SparqlService {
   }
 
   @Override
-  @Deprecated
-  public void upload(Model model, String graphUri) {
-    updateGraph(graphUri, model);
-  }
-
-  @Override
   public void updateGraph(String graphUri, Model model) {
     upload(model, graphUri, false);
   }

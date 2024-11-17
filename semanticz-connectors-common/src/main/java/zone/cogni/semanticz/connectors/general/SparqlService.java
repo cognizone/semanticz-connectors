@@ -16,14 +16,6 @@ public interface SparqlService {
   void uploadTtlFile(File file);
 
   /**
-   * @deprecated use {@link #executeConstructQuery(String)} instead
-   */
-  @Deprecated(forRemoval = true)
-  default Model queryForModel(String query) {
-    return executeConstructQuery(query);
-  }
-
-  /**
    * Executes SPARQL CONSTRUCT query and returns the result as a Model.
    *
    * @param constructQuery SPARQL CONSTRUCT query to execute
@@ -35,21 +27,11 @@ public interface SparqlService {
 
   boolean executeAskQuery(String updateQuery);
 
-  /**
-   * Deprecated because naming is a bit vague.
-   * Please use {@link #updateGraph(String, Model)}.
-   */
-  @Deprecated
-  default void upload(Model model, String graphUri) {
-    updateGraph(graphUri, model);
-  }
-
   <R> R executeSelectQuery(String query, Function<ResultSet, R> resultHandler);
 
   /**
    * Deletes all triples from the named graph with the given URI.
    * It might also delete the graph itself in case the store supports it.
-   *
    * This method does not fail even if the named graph does not exist.
    *
    * @param graphUri named graph URI
@@ -76,7 +58,7 @@ public interface SparqlService {
    *   <li>default implementation is not considered to be robust and should be overridden</li>
    *   <li>
    *     new method was introduced because a lot of projects are actually trying to emulate a replace
-   *     by doing a manual {@link #dropGraph(String)} and {@link #upload(Model, String)}.
+   *     by doing a manual {@link #dropGraph(String)} and {@link #updateGraph(String,Model)}.
    *   </li>
    * </ul>
    * </p>

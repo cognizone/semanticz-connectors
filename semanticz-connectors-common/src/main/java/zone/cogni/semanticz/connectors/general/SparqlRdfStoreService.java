@@ -48,7 +48,7 @@ public class SparqlRdfStoreService implements RdfStoreService {
   @Override
   public Model executeConstructQuery(Query query, QuerySolutionMap bindings) {
     query = buildQuery(query, bindings);
-    return sparqlService.queryForModel(query.toString());
+    return sparqlService.executeConstructQuery(query.toString());
   }
 
   @Override
