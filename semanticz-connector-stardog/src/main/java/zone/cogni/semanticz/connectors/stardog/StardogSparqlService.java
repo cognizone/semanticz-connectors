@@ -81,11 +81,6 @@ public class StardogSparqlService implements SparqlService {
   }
 
   @Override
-  public void upload(Model model, String graphUri) {
-    updateGraph(graphUri, model);
-  }
-
-  @Override
   public void updateGraph(String graphUri, Model model) {
     upload(model, graphUri, false);
   }

@@ -37,7 +37,7 @@ public class GraphdbSparqlServiceTest extends AbstractSparqlServiceTest<GraphDBS
 
   @Test
   public void testQueryForModelReturnsUnionOfAllGraphs() {
-    final Model model = getSUT().queryForModel("CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o }");
+    final Model model = getSUT().executeConstructQuery("CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o }");
     Assertions.assertEquals(2, model.size());
   }
 }

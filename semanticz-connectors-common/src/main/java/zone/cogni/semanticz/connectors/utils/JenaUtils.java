@@ -1,6 +1,5 @@
 package zone.cogni.semanticz.connectors.utils;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.riot.RDFLanguages;
 import org.slf4j.Logger;
@@ -55,13 +54,6 @@ public class JenaUtils {
         log.warn("Closing model failed.", e);
       }
     }
-  }
-
-  public static String getLangByResourceName(String resourceName) {
-    String ext = FilenameUtils.getExtension(resourceName);
-    if (ext.equalsIgnoreCase("ttl")) return "TTL";
-    //TODO: add other types
-    return null;
   }
 
   public static Model readInto(File file, Model model) {
