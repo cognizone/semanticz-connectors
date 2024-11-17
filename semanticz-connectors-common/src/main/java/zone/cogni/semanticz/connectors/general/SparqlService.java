@@ -43,8 +43,9 @@ public interface SparqlService {
    * <p>
    * Note: please use with care since in most case you probably want to use #replaceGraph
    * </p>
+   *
    * @param graphUri uri of graph being updated
-   * @param model model which is being added to the current graph
+   * @param model    model which is being added to the current graph
    */
   void updateGraph(String graphUri, Model model);
 
@@ -58,16 +59,26 @@ public interface SparqlService {
    *   <li>default implementation is not considered to be robust and should be overridden</li>
    *   <li>
    *     new method was introduced because a lot of projects are actually trying to emulate a replace
-   *     by doing a manual {@link #dropGraph(String)} and {@link #updateGraph(String,Model)}.
+   *     by doing a manual {@link #dropGraph(String)} and {@link #updateGraph(String, Model)}.
    *   </li>
    * </ul>
    * </p>
    *
    * @param graphUri uri of graph being updated
-   * @param model new model which will be in the designated graph.
+   * @param model    new model which will be in the designated graph.
    */
   default void replaceGraph(String graphUri, Model model) {
     dropGraph(graphUri);
     updateGraph(graphUri, model);
+  }
+
+  /**
+   * Checks if the given graphIri is empty.
+   *
+   * @param graphIri IRI of the named graph to check for emptiness, or null if the default graph should be checked.
+   * @return true if the graph does not contain any triple. Note that this methods might return false also in case the graph even does not exist.
+   */
+  default boolean isEmpty(String graphIri) {
+    return !executeAskQuery(String.format("ASK { GRAPH <%s> {?s ?p ?o}}", graphIri));
   }
 }
