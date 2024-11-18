@@ -97,7 +97,7 @@ public interface SparqlService {
    * @param graphIri IRI of the named graph to check for emptiness, or null if the default graph should be checked.
    * @return true if the graph does not contain any triple. Note that this methods might return false also in case the graph even does not exist.
    */
-  default boolean isEmpty(String graphIri) {
+  default boolean isEmptyGraph(String graphIri) {
     return !executeAskQuery(String.format("ASK { GRAPH <%s> {?s ?p ?o}}", graphIri));
   }
 }
