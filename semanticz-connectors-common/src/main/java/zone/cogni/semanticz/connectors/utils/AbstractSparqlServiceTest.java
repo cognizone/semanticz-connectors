@@ -193,20 +193,20 @@ public abstract class AbstractSparqlServiceTest<T extends SparqlService> {
   }
 
   @Test
-  public void testIsEmptyOfNamedGraphReturnsTrueWheneverNoTripleExistsThere() {
-    final boolean isEmpty = sut.isEmpty("https://example.org/m3");
+  public void testIsEmptyGraphOfNamedGraphReturnsTrueWheneverNoTripleExistsThere() {
+    final boolean isEmpty = sut.isEmptyGraph("https://example.org/m3");
     Assertions.assertTrue(isEmpty);
   }
 
   @Test
-  public void testIsEmptyOfNamedGraphReturnsTrueWheneverATripleExists() {
-    final boolean isEmpty = sut.isEmpty("https://example.org/m2");
+  public void testIsEmptyGraphOfNamedGraphReturnsTrueWheneverATripleExists() {
+    final boolean isEmpty = sut.isEmptyGraph("https://example.org/m2");
     Assertions.assertFalse(isEmpty);
   }
 
   @Test
-  public void testIsEmptyOfDefaultGraphReturnsTrueWheneverNoTripleExistsThere() {
-    final boolean isEmpty = sut.isEmpty(null );
+  public void testIsEmptyGraphOfDefaultGraphReturnsTrueWheneverNoTripleExistsThere() {
+    final boolean isEmpty = sut.isEmptyGraph(null );
     Assertions.assertTrue(isEmpty);
   }
 }
