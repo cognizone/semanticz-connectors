@@ -32,7 +32,7 @@ import zone.cogni.sem.jena.template.JenaResultSetHandler;
 import zone.cogni.semanticz.connectors.general.RdfStoreService;
 import zone.cogni.semanticz.connectors.utils.JenaUtils;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import java.io.File;
 import java.util.function.Supplier;
 

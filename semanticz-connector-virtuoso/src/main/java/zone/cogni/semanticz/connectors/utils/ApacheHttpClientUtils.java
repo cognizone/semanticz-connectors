@@ -21,21 +21,25 @@ package zone.cogni.semanticz.connectors.utils;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpHeaders;
-import org.apache.http.HttpResponse;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.hc.client5.http.auth.AuthScope;
+import org.apache.hc.client5.http.auth.Credentials;
+import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.classic.methods.HttpPut;
+import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
+import org.apache.hc.client5.http.config.ConnectionConfig;
+import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.HttpHeaders;
+import org.apache.hc.core5.http.HttpResponse;
+import org.apache.hc.core5.http.io.entity.StringEntity;
+import org.apache.hc.core5.util.TimeValue;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -46,7 +50,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 import static zone.cogni.semanticz.connectors.utils.Constants.APPLICATION_SPARQL_QUERY;
@@ -69,13 +72,15 @@ public class ApacheHttpClientUtils {
    */
   private static CloseableHttpClient buildHttpClient(final String username, final String password) {
     final HttpClientBuilder httpClientBuilder = HttpClients.custom().useSystemProperties();
-    httpClientBuilder.setConnectionManager(
-        new PoolingHttpClientConnectionManager(60L, TimeUnit.SECONDS));
+    httpClientBuilder.setConnectionManager(PoolingHttpClientConnectionManagerBuilder.create()
+            .setDefaultConnectionConfig(ConnectionConfig.custom()
+                    .setTimeToLive(TimeValue.ofSeconds(60)).build()).build());
 
     if (StringUtils.isNoneBlank(username, password)) {
-      CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-      credentialsProvider.setCredentials(AuthScope.ANY,
-          new UsernamePasswordCredentials(username, password));
+      BasicCredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+      Credentials credentials = new UsernamePasswordCredentials(username, password.toCharArray());
+      credentialsProvider.setCredentials(new AuthScope(null, -1), credentials);
+      httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
       httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
     } else {
       log.warn("Service is configured without credentials.");
@@ -89,10 +94,10 @@ public class ApacheHttpClientUtils {
    * @param response HTTP response to check.
    */
   private static void ensureResponseOK(HttpResponse response) {
-    if ((response.getStatusLine().getStatusCode() / 100) != 2) {
+    if ((response.getCode() / 100) != 2) {
       throw new RuntimeException(
-          "Not 2xx as answer: " + response.getStatusLine().getStatusCode() + " "
-              + response.getStatusLine().getReasonPhrase());
+              "Not 2xx as answer: " + response.getCode() + " "
+                      + response.getReasonPhrase());
     }
   }
 
@@ -142,13 +147,13 @@ public class ApacheHttpClientUtils {
   }
 
   private static HttpPost createPost(final String sparqlServiceUrl, final String acceptHeader,
-      final String username, final String password, final boolean addBasicAuth) {
+                                     final String username, final String password, final boolean addBasicAuth) {
     final HttpPost httpPost = new HttpPost(sparqlServiceUrl);
     httpPost.setHeader(CONTENT_TYPE, APPLICATION_SPARQL_QUERY);
     httpPost.setHeader(HttpHeaders.ACCEPT, acceptHeader);
     if (addBasicAuth) {
       httpPost.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + Base64.encodeBase64String(
-          (username + ":" + password).getBytes(StandardCharsets.UTF_8)));
+              (username + ":" + password).getBytes(StandardCharsets.UTF_8)));
     }
     return httpPost;
   }
@@ -165,8 +170,8 @@ public class ApacheHttpClientUtils {
    * @param contentType  to send the data with
    */
   public static void executeAuthenticatedPostOrPut(final String url, final String username,
-      final String password, final boolean addBasicAuth, final HttpEntity httpEntity, boolean put,
-      final String contentType) {
+                                                   final String password, final boolean addBasicAuth, final HttpEntity httpEntity, boolean put,
+                                                   final String contentType) {
 
     try (final CloseableHttpClient httpclient = ApacheHttpClientUtils.buildHttpClient(username,
         password)) {
@@ -174,12 +179,13 @@ public class ApacheHttpClientUtils {
       httpPost.setHeader(CONTENT_TYPE, contentType);
       if (addBasicAuth) {
         httpPost.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + Base64.encodeBase64String(
-            (username + ":" + password).getBytes(StandardCharsets.UTF_8)));
+                (username + ":" + password).getBytes(StandardCharsets.UTF_8)));
       }
       httpPost.setEntity(httpEntity);
 
-      final HttpResponse response = httpclient.execute(httpPost);
-      ensureResponseOK(response);
+      try (CloseableHttpResponse response = httpclient.execute(httpPost)) {
+        ensureResponseOK(response);
+      }
     } catch (final IOException e) {
       throw new RuntimeException(e);
     }
@@ -195,19 +201,20 @@ public class ApacheHttpClientUtils {
    * @param addBasicAuth     whether the "Authorization Basic ..." header shall be added
    */
   public static boolean executeAsk(final String sparqlServiceUrl, final String username,
-      final String password, final String query, final boolean addBasicAuth) {
+                                   final String password, final String query, final boolean addBasicAuth) {
 
     try (final CloseableHttpClient httpclient = ApacheHttpClientUtils.buildHttpClient(username,
-        password)) {
+            password)) {
       final String acceptHeader = Constants.APPLICATION_SPARQL_RESULTS_XML;
-      final HttpEntityEnclosingRequestBase httpPost = createPost(sparqlServiceUrl, acceptHeader,
-          username, password, addBasicAuth);
+      final HttpPost httpPost = createPost(sparqlServiceUrl, acceptHeader,
+              username, password, addBasicAuth);
       httpPost.setEntity(new StringEntity(query, StandardCharsets.UTF_8));
 
-      final HttpResponse response = httpclient.execute(httpPost);
-      ensureResponseOK(response);
-      return ResultSetMgr.readBoolean(response.getEntity().getContent(),
-          getResultSetLanguage(response, acceptHeader));
+      try (final CloseableHttpResponse response = httpclient.execute(httpPost)) {
+        ensureResponseOK(response);
+        return ResultSetMgr.readBoolean(response.getEntity().getContent(),
+                getResultSetLanguage(response, acceptHeader));
+      }
     } catch (final IOException e) {
       throw new RuntimeException(e);
     }
@@ -223,20 +230,21 @@ public class ApacheHttpClientUtils {
    * @param addBasicAuth     whether the "Authorization Basic ..." header shall be added
    */
   public static <R> R executeSelect(final String sparqlServiceUrl, final String username,
-      final String password, final String query, final boolean addBasicAuth,
-      final Function<ResultSet, R> handler) {
+                                    final String password, final String query, final boolean addBasicAuth,
+                                    final Function<ResultSet, R> handler) {
 
     try (final CloseableHttpClient httpclient = ApacheHttpClientUtils.buildHttpClient(username,
-        password)) {
+            password)) {
       final String acceptHeader = Constants.APPLICATION_SPARQL_RESULTS_XML;
-      final HttpEntityEnclosingRequestBase httpPost = createPost(sparqlServiceUrl, acceptHeader,
-          username, password, addBasicAuth);
+      final HttpPost httpPost = createPost(sparqlServiceUrl, acceptHeader,
+              username, password, addBasicAuth);
       httpPost.setEntity(new StringEntity(query, StandardCharsets.UTF_8));
 
-      final HttpResponse response = httpclient.execute(httpPost);
-      ensureResponseOK(response);
-      return handler.apply(ResultSetMgr.read(response.getEntity().getContent(),
-          getResultSetLanguage(response, acceptHeader)).materialise());
+      try (final ClassicHttpResponse response = httpclient.execute(httpPost)) {
+        ensureResponseOK(response);
+        return handler.apply(ResultSetMgr.read(response.getEntity().getContent(),
+                getResultSetLanguage(response, acceptHeader)).materialise());
+      }
     } catch (final IOException e) {
       throw new RuntimeException(e);
     }
@@ -252,20 +260,21 @@ public class ApacheHttpClientUtils {
    * @param addBasicAuth     whether the "Authorization Basic ..." header shall be added
    */
   public static Model executeConstruct(final String sparqlServiceUrl, final String username,
-      final String password, final String query, final boolean addBasicAuth) {
+                                       final String password, final String query, final boolean addBasicAuth) {
 
     try (final CloseableHttpClient httpclient = ApacheHttpClientUtils.buildHttpClient(username,
-        password)) {
-      final HttpEntityEnclosingRequestBase httpPost = createPost(sparqlServiceUrl, Constants.TEXT_TURTLE,
-          username, password, addBasicAuth);
+            password)) {
+      final HttpPost httpPost = createPost(sparqlServiceUrl, Constants.TEXT_TURTLE,
+              username, password, addBasicAuth);
       httpPost.setEntity(new StringEntity(query, StandardCharsets.UTF_8));
 
-      final HttpResponse response = httpclient.execute(httpPost);
-      ensureResponseOK(response);
+      try (final CloseableHttpResponse response = httpclient.execute(httpPost)) {
+        ensureResponseOK(response);
 
-      final Model model = ModelFactory.createDefaultModel();
-      model.read(response.getEntity().getContent(), null, Lang.TURTLE.getLabel());
-      return model;
+        final Model model = ModelFactory.createDefaultModel();
+        model.read(response.getEntity().getContent(), null, Lang.TURTLE.getLabel());
+        return model;
+      }
     } catch (final IOException e) {
       throw new RuntimeException(e);
     }
