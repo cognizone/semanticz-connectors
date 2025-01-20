@@ -1,4 +1,6 @@
 # RDF Store Connectors
+[![main](https://github.com/cognizone/semanticz-connectors/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/cognizone/semanticz-connectors/actions/workflows/main.yml)
+[![develop](https://github.com/cognizone/semanticz-connectors/actions/workflows/develop.yml/badge.svg)](https://github.com/cognizone/semanticz-connectors/actions/workflows/develop.yml)
 
 This repository contains connectors to RDF stores. Its goal is to provide unified API for accessing various back-end
 implementations and to optimize them in future with implementations more optimized towards individual stores.
