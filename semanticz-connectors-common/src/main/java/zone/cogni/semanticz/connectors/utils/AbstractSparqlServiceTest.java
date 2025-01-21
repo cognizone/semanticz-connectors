@@ -79,7 +79,7 @@ public abstract class AbstractSparqlServiceTest<T extends SparqlService> {
             getClass().getResource("/dataset.trig")).toURI().toURL().openStream()).lang(Lang.TRIG).parse(dataset);
 
     String data = RDFWriter.source(dataset.getDefaultModel()).format(RDFFormat.NTRIPLES).asString();
-    sut.executeUpdateQuery("DELETE { ?s ?p ?o } WHERE { ?s ?p ?o }");
+    sut.executeUpdateQuery("DELETE { GRAPH ?g { ?s ?p ?o } } WHERE { GRAPH ?g { ?s ?p ?o } }");
     sut.executeUpdateQuery("INSERT DATA { " + data + " }");
     final Iterator<String> graphs = dataset.listNames();
     while (graphs.hasNext()) {
@@ -118,7 +118,7 @@ public abstract class AbstractSparqlServiceTest<T extends SparqlService> {
   public void testUploadTtlFileWorksCorrectly() throws IOException {
     final Path dir = Files.createTempDirectory("testUploadTtlFileWorksCorrectly-");
     final String fileName = "testUploadTtlFileWorksCorrectly.ttl";
-    final File file = Files.createTempFile(dir, fileName, "").toFile();
+    final File file = Files.createTempFile(dir, fileName, ".ttl").toFile();
     try {
       final Model model = ModelFactory.createDefaultModel();
       model.add(createResource(r("c1")), RDFS.comment, "comment");
@@ -130,7 +130,6 @@ public abstract class AbstractSparqlServiceTest<T extends SparqlService> {
       sut.uploadTtlFile(file);
       Assertions.assertTrue(sut.executeAskQuery(checkTripleExists));
     } finally {
-      sut.dropGraph(file.toURI().toString());
       file.delete();
     }
   }
