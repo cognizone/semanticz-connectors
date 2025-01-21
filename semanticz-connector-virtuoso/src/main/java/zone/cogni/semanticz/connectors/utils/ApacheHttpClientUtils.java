@@ -49,6 +49,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
+import static org.apache.http.HttpHeaders.CONTENT_TYPE;
+import static zone.cogni.semanticz.connectors.utils.Constants.APPLICATION_SPARQL_QUERY;
+
 /**
  * Utility functions for working with the Apache HttpClient.
  */
@@ -114,7 +117,7 @@ public class ApacheHttpClientUtils {
    * @return ResultSet language (XML/JSON)
    */
   private static Lang getResultSetLanguage(final HttpResponse response, final String acceptHeader) {
-    String actualContentType = response.getFirstHeader(HttpHeaders.CONTENT_TYPE).getValue();
+    String actualContentType = response.getFirstHeader(CONTENT_TYPE).getValue();
     actualContentType = removeCharset(actualContentType);
 
     // If the server fails to return a Content-Type then we will assume
@@ -141,7 +144,7 @@ public class ApacheHttpClientUtils {
   private static HttpPost createPost(final String sparqlServiceUrl, final String acceptHeader,
       final String username, final String password, final boolean addBasicAuth) {
     final HttpPost httpPost = new HttpPost(sparqlServiceUrl);
-    httpPost.setHeader(HttpHeaders.CONTENT_TYPE, "application/sparql-query");
+    httpPost.setHeader(CONTENT_TYPE, APPLICATION_SPARQL_QUERY);
     httpPost.setHeader(HttpHeaders.ACCEPT, acceptHeader);
     if (addBasicAuth) {
       httpPost.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + Base64.encodeBase64String(
@@ -168,7 +171,7 @@ public class ApacheHttpClientUtils {
     try (final CloseableHttpClient httpclient = ApacheHttpClientUtils.buildHttpClient(username,
         password)) {
       final HttpEntityEnclosingRequestBase httpPost = put ? new HttpPut(url) : new HttpPost(url);
-      httpPost.setHeader(HttpHeaders.CONTENT_TYPE, contentType);
+      httpPost.setHeader(CONTENT_TYPE, contentType);
       if (addBasicAuth) {
         httpPost.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + Base64.encodeBase64String(
             (username + ":" + password).getBytes(StandardCharsets.UTF_8)));

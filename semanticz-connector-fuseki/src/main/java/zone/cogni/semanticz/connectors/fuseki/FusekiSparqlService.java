@@ -19,7 +19,7 @@
 
 package zone.cogni.semanticz.connectors.fuseki;
 
-import org.apache.http.HttpHeaders;
+import static org.apache.http.HttpHeaders.CONTENT_TYPE;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionBuilder;
 import org.apache.jena.query.ResultSet;
@@ -75,7 +75,7 @@ public class FusekiSparqlService implements SparqlService {
       request = HttpRequest
           .newBuilder(URI.create(sparqlUrl))
           .POST(BodyPublishers.ofFile(file.toPath()))
-          .header(HttpHeaders.CONTENT_TYPE, config.getTurtleMimeType() + ";charset=utf-8")
+          .header(CONTENT_TYPE, config.getTurtleMimeType() + ";charset=utf-8")
           .build();
     } catch (FileNotFoundException e) {
       throw new RuntimeException(e);
@@ -96,7 +96,7 @@ public class FusekiSparqlService implements SparqlService {
         .newBuilder(URI.create(config.getUpdateUrl()))
         .POST(BodyPublishers.ofString("update=" + URLEncoder.encode(updateQuery,
                 StandardCharsets.UTF_8)))
-        .header(HttpHeaders.CONTENT_TYPE, Constants.APPLICATION_FORM_URLENCODED_VALUE)
+        .header(CONTENT_TYPE, Constants.APPLICATION_FORM_URLENCODED_VALUE)
         .build();
     System.out.println(request);
     execute(request, httpClient);
@@ -120,7 +120,7 @@ public class FusekiSparqlService implements SparqlService {
     final BodyPublisher p = BodyPublishers.ofByteArray(writer.toString().getBytes());
     final HttpRequest.Builder builder = HttpRequest
         .newBuilder(URI.create(insertUrl))
-        .header(HttpHeaders.CONTENT_TYPE, config.getTurtleMimeType() + ";charset=utf-8");
+        .header(CONTENT_TYPE, config.getTurtleMimeType() + ";charset=utf-8");
 
     final HttpRequest request = (replace ? builder.PUT(p) : builder.POST(p)).build();
     execute(request, httpClient);
