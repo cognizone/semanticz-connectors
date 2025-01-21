@@ -41,7 +41,7 @@ public class VirtuosoSparqlServiceTest extends AbstractSparqlServiceTest<Virtuos
 
   public VirtuosoSparqlService createSUT() {
     final Config config = new Config();
-    config.setUrl("http://localhost:18890/sparql-auth");
+    config.setUrl("http://localhost:8890/sparql-auth");
     config.setUser("dba");
     config.setPassword("dba");
     config.setGraphCrudUseBasicAuth(false);
