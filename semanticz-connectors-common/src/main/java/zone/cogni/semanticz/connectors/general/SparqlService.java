@@ -98,6 +98,10 @@ public interface SparqlService {
    * @return true if the graph does not contain any triple. Note that this methods might return false also in case the graph even does not exist.
    */
   default boolean isEmptyGraph(String graphIri) {
-    return !executeAskQuery(String.format("ASK { GRAPH <%s> {?s ?p ?o}}", graphIri));
+    if (graphIri == null) {
+      return !executeAskQuery("ASK WHERE { ?s ?p ?o FILTER NOT EXISTS { GRAPH ?g { ?s ?p ?o } } }");
+    } else {
+      return !executeAskQuery(String.format("ASK { GRAPH <%s> {?s ?p ?o}}", graphIri));
+    }
   }
 }
