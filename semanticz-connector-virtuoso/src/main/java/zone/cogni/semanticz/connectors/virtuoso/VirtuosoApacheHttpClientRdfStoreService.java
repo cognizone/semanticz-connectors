@@ -23,24 +23,23 @@ import io.vavr.control.Try;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.hc.client5.http.auth.AuthScope;
-import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
-import org.apache.hc.client5.http.classic.methods.HttpPost;
-import org.apache.hc.client5.http.classic.methods.HttpPut;
-import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
-import org.apache.hc.client5.http.config.ConnectionConfig;
-import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
-import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
-import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
-import org.apache.hc.client5.http.impl.classic.HttpClients;
-import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
-import org.apache.hc.core5.http.ContentType;
-import org.apache.hc.core5.http.io.entity.ByteArrayEntity;
-import org.apache.hc.core5.http.io.entity.EntityUtils;
-import org.apache.hc.core5.http.message.BasicNameValuePair;
-import org.apache.hc.core5.util.TimeValue;
+import org.apache.http.HttpResponse;
+import org.apache.http.StatusLine;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 import org.apache.jena.query.ParameterizedSparqlString;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QuerySolutionMap;
@@ -55,6 +54,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
+import java.util.concurrent.TimeUnit;
 
 import static zone.cogni.semanticz.connectors.utils.Constants.CONTENT_TYPE;
 import static zone.cogni.semanticz.connectors.utils.Constants.TEXT_TURTLE;
@@ -88,14 +88,12 @@ public class VirtuosoApacheHttpClientRdfStoreService implements RdfStoreService 
 
   protected CloseableHttpClient buildHttpClient() {
     HttpClientBuilder httpClientBuilder = HttpClients.custom().useSystemProperties();
-    httpClientBuilder.setConnectionManager(PoolingHttpClientConnectionManagerBuilder.create()
-            .setDefaultConnectionConfig(ConnectionConfig.custom()
-                    .setTimeToLive(TimeValue.ofSeconds(60)).build()).build());
-
+    httpClientBuilder.setConnectionManager(
+        new PoolingHttpClientConnectionManager(60L, TimeUnit.SECONDS));
     if (!StringUtils.isBlank(rdfStoreUser)) {
-      BasicCredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-      credentialsProvider.setCredentials(new AuthScope(null, -1),
-          new UsernamePasswordCredentials(rdfStoreUser, rdfStorePassword.toCharArray()));
+      CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+      credentialsProvider.setCredentials(AuthScope.ANY,
+          new UsernamePasswordCredentials(rdfStoreUser, rdfStorePassword));
       httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
     } else {
       log.warn("Virtuoso executor service {} is configured without credentials.", rdfStoreUrl);
@@ -132,9 +130,9 @@ public class VirtuosoApacheHttpClientRdfStoreService implements RdfStoreService 
     }
 
     try (CloseableHttpClient client = buildHttpClient()) {
-      CloseableHttpResponse response = client.execute(request);
-      int responseCode = response.getCode();
-      String reason = response.getReasonPhrase();
+      HttpResponse response = client.execute(request);
+      int responseCode = response.getStatusLine().getStatusCode();
+      String reason = response.getStatusLine().getReasonPhrase();
       String responseBody = Try.of(
               () -> IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8))
           .onFailure(ex -> log.error("Failed to read response body", ex))
@@ -181,15 +179,20 @@ public class VirtuosoApacheHttpClientRdfStoreService implements RdfStoreService 
 
   @Override
   public void executeUpdateQuery(String updateQuery) {
+    CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+    credentialsProvider.setCredentials(AuthScope.ANY,
+        new UsernamePasswordCredentials(rdfStoreUser, rdfStorePassword));
+
     try (CloseableHttpClient httpClient = buildHttpClient()) {
       HttpPost httpPost = new HttpPost(rdfStoreUrl);
       httpPost.setEntity(new UrlEncodedFormEntity(
           Collections.singletonList(new BasicNameValuePair("query", updateQuery)),
           StandardCharsets.UTF_8));
-      CloseableHttpResponse response = httpClient.execute(httpPost);
+      HttpResponse response = httpClient.execute(httpPost);
+      StatusLine statusLine = response.getStatusLine();
 
-      if (!is2xxSuccessful(response.getCode())) {
-        log.error("Virtuoso update failed with http status code {}", response.getCode());
+      if (!is2xxSuccessful(statusLine.getStatusCode())) {
+        log.error("Virtuoso update failed with http status code {}", statusLine.getStatusCode());
         String errorResponse = IOUtils.toString(response.getEntity().getContent(),
             StandardCharsets.UTF_8);
         log.error("Virtuoso update failed with result {}", errorResponse);

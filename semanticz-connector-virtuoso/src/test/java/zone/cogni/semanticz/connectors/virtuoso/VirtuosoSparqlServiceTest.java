@@ -24,8 +24,7 @@ import java.net.URISyntaxException;
 import java.util.Iterator;
 import java.util.Objects;
 
-import org.apache.hc.core5.http.ContentType;
-import org.apache.hc.core5.http.io.entity.ByteArrayEntity;
+import org.apache.http.entity.ByteArrayEntity;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
