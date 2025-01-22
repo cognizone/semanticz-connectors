@@ -1,5 +1,5 @@
 [versions]
-jena = "5.2.0"
+jena = "5.3.0"
 junit = "5.10.0"
 lombok = "8.10"
 spring = "5.3.31"
