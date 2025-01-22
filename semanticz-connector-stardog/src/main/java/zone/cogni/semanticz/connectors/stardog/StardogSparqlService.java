@@ -19,7 +19,6 @@
 
 package zone.cogni.semanticz.connectors.stardog;
 
-import static org.apache.http.HttpHeaders.CONTENT_TYPE;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionBuilder;
 import org.apache.jena.query.ResultSet;
@@ -42,6 +41,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublisher;
 import java.nio.charset.StandardCharsets;
 import java.util.function.Function;
+
+import static zone.cogni.semanticz.connectors.utils.Constants.CONTENT_TYPE;
 
 public class StardogSparqlService implements SparqlService {
   private final String endpointUrl;

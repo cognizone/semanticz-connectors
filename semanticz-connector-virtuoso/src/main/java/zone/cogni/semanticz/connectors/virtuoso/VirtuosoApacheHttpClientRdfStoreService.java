@@ -56,7 +56,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
-import static org.apache.http.HttpHeaders.CONTENT_TYPE;
+import static zone.cogni.semanticz.connectors.utils.Constants.CONTENT_TYPE;
 import static zone.cogni.semanticz.connectors.utils.Constants.TEXT_TURTLE;
 
 /**

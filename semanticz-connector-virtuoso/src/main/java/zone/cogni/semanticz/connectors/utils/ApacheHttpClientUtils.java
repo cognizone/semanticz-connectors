@@ -49,8 +49,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
-import static org.apache.http.HttpHeaders.CONTENT_TYPE;
 import static zone.cogni.semanticz.connectors.utils.Constants.APPLICATION_SPARQL_QUERY;
+import static zone.cogni.semanticz.connectors.utils.Constants.CONTENT_TYPE;
 
 /**
  * Utility functions for working with the Apache HttpClient.

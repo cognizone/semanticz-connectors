@@ -19,7 +19,6 @@
 
 package zone.cogni.semanticz.connectors.fuseki;
 
-import static org.apache.http.HttpHeaders.CONTENT_TYPE;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionBuilder;
 import org.apache.jena.query.ResultSet;
@@ -42,6 +41,7 @@ import java.net.http.HttpRequest.BodyPublishers;
 import java.nio.charset.StandardCharsets;
 import java.util.function.Function;
 
+import static zone.cogni.semanticz.connectors.utils.Constants.CONTENT_TYPE;
 import static zone.cogni.semanticz.connectors.utils.HttpClientUtils.execute;
 
 /**
