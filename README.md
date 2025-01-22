@@ -22,7 +22,12 @@ The project structure is as follows:
 
 ## Usage
 
-The library currently supports Java 11, Jena 4, Spring 5 - full list of versions is in [gradle/libs.versions.toml](gradle/libs.versions.toml).
+| semanticz-connectors | Java | Jena |
+|----------------------|------|------|
+| 1.x                  | 11   | 4    |
+| 2.x                  | 17   | 5    |
+
+Full list of versions of the given branch is in [gradle/libs.versions.toml](gradle/libs.versions.toml).
 
 Two usage scenarios are anticipated:
 1. Dedicated connector usage, e.g. for gradle:
