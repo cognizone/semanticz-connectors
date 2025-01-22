@@ -33,6 +33,8 @@ import zone.cogni.semanticz.connectors.utils.ApacheHttpClientUtils;
 import zone.cogni.semanticz.connectors.utils.AbstractSparqlServiceTest;
 import zone.cogni.semanticz.connectors.general.Config;
 
+import static zone.cogni.semanticz.connectors.utils.Constants.TEXT_TURTLE;
+
 @Disabled("An integration test dependent on a running Virtuoso instance. To run it manually, set the Config below properly and run the tests.")
 public class VirtuosoSparqlServiceTest extends AbstractSparqlServiceTest<VirtuosoSparqlService> {
 
@@ -61,7 +63,7 @@ public class VirtuosoSparqlServiceTest extends AbstractSparqlServiceTest<Virtuos
       final String url = VirtuosoHelper.getVirtuosoUpdateUrl(config.getUrl(), name);
       ApacheHttpClientUtils.executeAuthenticatedPostOrPut(url, config.getUser(), config.getPassword(),
               config.isGraphCrudUseBasicAuth(), new ByteArrayEntity(w.toString().getBytes()), true,
-              "text/turtle;charset=utf-8");
+              TEXT_TURTLE + ";charset=utf-8");
     }
 
     return new VirtuosoSparqlService(config);

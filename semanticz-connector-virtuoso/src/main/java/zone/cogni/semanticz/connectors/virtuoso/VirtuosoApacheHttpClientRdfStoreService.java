@@ -56,6 +56,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
+import static zone.cogni.semanticz.connectors.utils.Constants.CONTENT_TYPE;
+import static zone.cogni.semanticz.connectors.utils.Constants.TEXT_TURTLE;
+
 /**
  * Implementation of VirtuosoRdfStoreService backed directly by Apache HttpClient.
  */
@@ -120,7 +123,7 @@ public class VirtuosoApacheHttpClientRdfStoreService implements RdfStoreService 
     log.info("Calling {} with basic auth: {}", url, graphCrudUseBasicAuth);
     HttpEntityEnclosingRequestBase request = replace ? new HttpPut(url) : new HttpPost(url);
     request.setEntity(new ByteArrayEntity(data));
-    request.setHeader("Content-Type", "text/turtle;charset=utf-8");
+    request.setHeader(CONTENT_TYPE, TEXT_TURTLE + ";charset=utf-8");
     if (graphCrudUseBasicAuth) {
       request.setHeader("Authorization", "Basic " + Base64.encodeBase64String(
           (rdfStoreUser + ":" + rdfStorePassword).getBytes(StandardCharsets.UTF_8)));

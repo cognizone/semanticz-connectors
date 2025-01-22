@@ -19,7 +19,6 @@
 
 package zone.cogni.semanticz.connectors.stardog;
 
-import org.apache.http.HttpHeaders;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionBuilder;
 import org.apache.jena.query.ResultSet;
@@ -43,6 +42,8 @@ import java.net.http.HttpRequest.BodyPublisher;
 import java.nio.charset.StandardCharsets;
 import java.util.function.Function;
 
+import static zone.cogni.semanticz.connectors.utils.Constants.CONTENT_TYPE;
+
 public class StardogSparqlService implements SparqlService {
   private final String endpointUrl;
   private final HttpClient httpClient;
@@ -63,7 +64,7 @@ public class StardogSparqlService implements SparqlService {
       request = HttpRequest
           .newBuilder(URI.create(endpointUrl))
           .POST(HttpRequest.BodyPublishers.ofFile(file.toPath()))
-          .header(HttpHeaders.CONTENT_TYPE, Lang.TURTLE.getHeaderString()+";charset=utf-8")
+          .header(CONTENT_TYPE, Lang.TURTLE.getHeaderString()+";charset=utf-8")
           .build();
     } catch (FileNotFoundException e) {
       throw new RuntimeException(e);
@@ -85,7 +86,7 @@ public class StardogSparqlService implements SparqlService {
     final HttpRequest request = HttpRequest
         .newBuilder(URI.create(endpointUrl + "/update"))
         .POST(HttpRequest.BodyPublishers.ofString("update=" + URLEncoder.encode(updateQuery, StandardCharsets.UTF_8), StandardCharsets.UTF_8))
-        .header(HttpHeaders.CONTENT_TYPE, Constants.APPLICATION_FORM_URLENCODED_VALUE)
+        .header(CONTENT_TYPE, Constants.APPLICATION_FORM_URLENCODED_VALUE)
         .build();
     HttpClientUtils.execute(request, httpClient);
   }
@@ -113,7 +114,7 @@ public class StardogSparqlService implements SparqlService {
     String graphStoreUrl = endpointUrl + "?graph=" + URLEncoder.encode(graphUri, StandardCharsets.UTF_8);
     byte[] body = JenaUtils.toByteArray(model, TripleSerializationFormat.turtle);
     final HttpRequest.Builder builder = HttpRequest.newBuilder(URI.create(graphStoreUrl))
-        .header(HttpHeaders.CONTENT_TYPE, Lang.TURTLE.getHeaderString() + ";charset=utf-8");
+        .header(CONTENT_TYPE, Lang.TURTLE.getHeaderString() + ";charset=utf-8");
     final BodyPublisher p = HttpRequest.BodyPublishers.ofByteArray(body);
     final HttpRequest request = (replace ? builder.PUT(p) : builder.POST(p)).build();
     HttpClientUtils.execute(request, httpClient);

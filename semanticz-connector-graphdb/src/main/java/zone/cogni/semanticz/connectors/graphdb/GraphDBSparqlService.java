@@ -20,7 +20,6 @@
 package zone.cogni.semanticz.connectors.graphdb;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.http.HttpHeaders;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionBuilder;
 import org.apache.jena.query.ResultSet;
@@ -42,6 +41,7 @@ import java.net.http.HttpRequest.BodyPublishers;
 import java.nio.charset.StandardCharsets;
 import java.util.function.Function;
 
+import static zone.cogni.semanticz.connectors.utils.Constants.CONTENT_TYPE;
 import static zone.cogni.semanticz.connectors.utils.HttpClientUtils.execute;
 
 public class GraphDBSparqlService implements SparqlService {
@@ -81,7 +81,7 @@ public class GraphDBSparqlService implements SparqlService {
     final HttpRequest request = HttpRequest
         .newBuilder()
         .POST(BodyPublishers.ofString(ttl, StandardCharsets.UTF_8))
-        .header(HttpHeaders.CONTENT_TYPE, Lang.TURTLE.getHeaderString())
+        .header(CONTENT_TYPE, Lang.TURTLE.getHeaderString())
         .uri(URI.create(config.getSparqlUpdateEndpoint()+"?context=" + URLEncoder.encode("<"+graphUri+">", StandardCharsets.UTF_8)))
         .build();
     execute(request, httpClient);
@@ -99,7 +99,7 @@ public class GraphDBSparqlService implements SparqlService {
     final HttpRequest request = HttpRequest
         .newBuilder(URI.create(config.getSparqlUpdateEndpoint()))
         .POST(BodyPublishers.ofString("update=" + URLEncoder.encode(updateQuery, StandardCharsets.UTF_8), StandardCharsets.UTF_8))
-        .header(HttpHeaders.CONTENT_TYPE, Constants.APPLICATION_FORM_URLENCODED_VALUE)
+        .header(CONTENT_TYPE, Constants.APPLICATION_FORM_URLENCODED_VALUE)
         .build();
     execute(request, httpClient);
   }
