@@ -25,10 +25,10 @@ The project structure is as follows:
 
 ## Usage
 
-| semanticz-connectors | Java | Jena | Spring |
-|----------------------|------|------|--------|
-| 1.x                  | 11   | 4    | 5      |
-| 2.x                  | 17   | 5    | 6      |
+| semanticz-connectors | Java | Jena |
+|----------------------|------|------|
+| 1.x                  | 11   | 4    |
+| 2.x                  | 17   | 5    |
 
 Full list of versions of the given branch is in [gradle/libs.versions.toml](gradle/libs.versions.toml).
 
