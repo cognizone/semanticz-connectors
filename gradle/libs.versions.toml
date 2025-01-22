@@ -1,14 +1,14 @@
 [versions]
 jena = "5.2.0"
-junit = "5.11.4"
-lombok = "8.11"
-spring = "6.1.13"
-vavr = "0.10.5"
-jakarta-annotation = "3.0.0"
+junit = "5.10.0"
+lombok = "8.10"
+spring = "5.3.31"
+vavr = "0.10.4"
+javax-annotation = "1.3.2"
 httpclient5 = "5.4.1"
 
 [libraries]
-jakarta-annotation-api = {module = "jakarta.annotation:jakarta.annotation-api", version.ref = "jakarta-annotation" }
+javax-annotation-api = {module = "javax.annotation:javax.annotation-api", version.ref = "javax-annotation" }
 jena-arq = { module = "org.apache.jena:jena-arq", version.ref = "jena" }
 jena-fuseki-main = { module = "org.apache.jena:jena-fuseki-main", version.ref = "jena" }
 jena-rdfconnection = { module = "org.apache.jena:jena-rdfconnection", version.ref = "jena" }
