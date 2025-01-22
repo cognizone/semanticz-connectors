@@ -38,6 +38,6 @@ public class VirtuosoSparqlServiceTest extends AbstractSparqlServiceTest<Virtuos
 
   @Override
   protected void disposeSUT(VirtuosoSparqlService sparqlService) {
-    // do nothing;
+    // do nothing; 
   }
 }
