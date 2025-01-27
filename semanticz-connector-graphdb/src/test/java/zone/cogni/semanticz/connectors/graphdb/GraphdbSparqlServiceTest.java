@@ -22,21 +22,30 @@ package zone.cogni.semanticz.connectors.graphdb;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import zone.cogni.semanticz.connectors.utils.AbstractSparqlServiceTest;
 
 import java.util.function.Function;
 
-@Disabled("An integration test dependent on a running GraphDB instance. To run it manually, set the GraphDBConfig below properly and run the tests.")
+import static zone.cogni.semanticz.connectors.graphdb.GraphdbSparqlServiceTest.PREFIX;
+
+@EnabledIfSystemProperty(named = PREFIX + "enabled", matches = "true")
 public class GraphdbSparqlServiceTest extends AbstractSparqlServiceTest<GraphDBSparqlService> {
+
+  static final String PREFIX = "semanticz.connector.graphdb.tests.";
+
+  private String getProperty(String x) {
+    return System.getProperty(PREFIX + x);
+  }
 
   public GraphDBSparqlService createSUT() {
     final GraphDBConfig config = new GraphDBConfig();
-    config.setUrl("http://localhost:7200");
-    config.setRepository("test");
-    config.setUser("test");
-    config.setPassword("test");
+    config.setUrl(getProperty("url"));
+    config.setRepository(getProperty("repository"));
+    config.setUser(getProperty("username"));
+    config.setPassword(getProperty("password"));
+
     return new GraphDBSparqlService(config);
   }
 
