@@ -20,6 +20,24 @@ The project structure is as follows:
 ./gradlew clean build
 ```
 
+### Running tests
+
+1. Unit tests
+```bash
+./gradlew test
+```
+
+2. Integration tests with local triple stores
+- Virtuoso (set the properties accordingly)
+```bash
+./gradlew semanticz-connector-virtuoso:test -Dsemanticz.connector.virtuoso.tests.enabled=true -Dsemanticz.connector.virtuoso.tests.url=http://localhost:8890/sparql-auth -Dsemanticz.connector.virtuoso.tests.username=dba -Dsemanticz.connector.virtuoso.tests.password=dba 
+```
+
+- GraphDB (set the properties accordingly)
+```bash
+./gradlew semanticz-connector-graphdb:test -Dsemanticz.connector.graphdb.tests.enabled=true -Dsemanticz.connector.graphdb.tests.url=http://localhost:7200 -Dsemanticz.connector.graphdb.tests.repository=test -Dsemanticz.connector.graphdb.tests.username=test -Dsemanticz.connector.graphdb.tests.password=test 
+```
+
 ## Usage
 
 | semanticz-connectors | Java | Jena |
