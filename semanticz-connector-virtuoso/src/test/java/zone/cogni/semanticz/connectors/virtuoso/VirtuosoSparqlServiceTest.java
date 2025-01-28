@@ -19,21 +19,16 @@
 
 package zone.cogni.semanticz.connectors.virtuoso;
 
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import zone.cogni.semanticz.connectors.utils.AbstractSparqlServiceTest;
-import zone.cogni.semanticz.connectors.general.Config;
 
-@Disabled("An integration test dependent on a running Virtuoso instance. To run it manually, set the Config below properly and run the tests.")
+import static zone.cogni.semanticz.connectors.virtuoso.Utils.PREFIX;
+
+@EnabledIfSystemProperty(named = PREFIX + "enabled", matches = "true")
 public class VirtuosoSparqlServiceTest extends AbstractSparqlServiceTest<VirtuosoSparqlService> {
 
   public VirtuosoSparqlService createSUT() {
-    final Config config = new Config();
-    config.setUrl("http://localhost:8890/sparql-auth");
-    config.setUser("dba");
-    config.setPassword("dba");
-    config.setGraphCrudUseBasicAuth(false);
-
-    return new VirtuosoSparqlService(config);
+    return new VirtuosoSparqlService(Utils.createTestConfig());
   }
 
   @Override

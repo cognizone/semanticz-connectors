@@ -19,22 +19,21 @@
 
 package zone.cogni.semanticz.connectors.virtuoso;
 
-import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import zone.cogni.semanticz.connectors.general.Config;
-import zone.cogni.semanticz.connectors.utils.AbstractRdfStoreServiceTest;
 
-import static zone.cogni.semanticz.connectors.virtuoso.Utils.PREFIX;
+public class Utils {
 
-@EnabledIfSystemProperty(named = PREFIX + "enabled", matches = "true")
-public class VirtuosoApacheHttpClientRdfStoreServiceTest extends AbstractRdfStoreServiceTest<VirtuosoApacheHttpClientRdfStoreService> {
+  static final String PREFIX = "semanticz.connector.virtuoso.tests.";
 
-  public VirtuosoApacheHttpClientRdfStoreService createSUT() {
-    final Config config = Utils.createTestConfig();
-    return new VirtuosoApacheHttpClientRdfStoreService(
-            config.getUrl(),
-            config.getUser(),
-            config.getPassword(),
-            config.isGraphCrudUseBasicAuth()
-    );
+  private static String getProperty(String property) {
+    return System.getProperty(PREFIX + property);
+  }
+
+  public static Config createTestConfig() {
+    return new Config()
+            .setUrl(getProperty("url"))
+            .setUser(getProperty("username"))
+            .setPassword(getProperty("password"))
+            .setGraphCrudUseBasicAuth(false);
   }
 }
