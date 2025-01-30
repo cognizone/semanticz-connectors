@@ -23,15 +23,17 @@ project.extensions.configure(JavaPluginExtension::class.java) {
     withSourcesJar()
 }
 
+// Configure scmVersion
 scmVersion {
     tag {
-        prefix.set("v")
-        versionSeparator.set("")
+        prefix = "v"
+        versionSeparator = ""
     }
     nextVersion {
-        suffix.set("SNAPSHOT")
-        separator.set("-")
+        suffix = "SNAPSHOT"
+        separator = "-"
     }
+   versionCreator("simple")
 }
 
 // Set the project version from scmVersion
