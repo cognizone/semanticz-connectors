@@ -19,17 +19,20 @@
 
 package zone.cogni.semanticz.connectors.jenamemory;
 
+import org.apache.jena.graph.Node;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
-import org.apache.jena.sparql.core.DatasetGraphFactory;
+import org.apache.jena.sparql.core.DatasetGraph;
+import org.apache.jena.sparql.core.DatasetGraphMapLink;
 import org.apache.jena.update.UpdateAction;
 import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateRequest;
 import zone.cogni.semanticz.connectors.general.SparqlService;
 
 import java.io.File;
+import java.util.Iterator;
 import java.util.function.Function;
 
 public class JenaModelSparqlService implements SparqlService {
@@ -66,10 +69,13 @@ public class JenaModelSparqlService implements SparqlService {
 
     private Dataset getDatasetForSelect() {
         if (simulateRelaxedVirtuosoSparqlSelect) {
-            Dataset relaxedDataset = DatasetFactory.wrap(DatasetGraphFactory.cloneStructure(dataset.asDatasetGraph()));
-            relaxedDataset.asDatasetGraph().setDefaultGraph(relaxedDataset.asDatasetGraph().getUnionGraph());
-            return relaxedDataset;
-        }
+            final DatasetGraph datasetGraph = dataset.asDatasetGraph();
+            final DatasetGraphMapLink newDataset = new DatasetGraphMapLink(datasetGraph.getUnionGraph());
+            for (Iterator<Node> names = datasetGraph.listGraphNodes(); names.hasNext(); ) {
+                Node graphName = names.next();
+                newDataset.addGraph(graphName, datasetGraph.getGraph(graphName));
+            }
+            return DatasetFactory.wrap(newDataset);        }
         return dataset;
     }
 

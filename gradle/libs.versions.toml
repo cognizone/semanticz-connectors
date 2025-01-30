@@ -1,10 +1,11 @@
 [versions]
-jena = "4.10.0"
+jena = "5.3.0"
 junit = "5.10.0"
 lombok = "8.10"
 spring = "5.3.31"
 vavr = "0.10.4"
 javax-annotation = "1.3.2"
+httpclient = "4.5.14"
 
 [libraries]
 javax-annotation-api = {module = "javax.annotation:javax.annotation-api", version.ref = "javax-annotation" }
@@ -15,6 +16,7 @@ junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "jun
 spring-core = { module = "org.springframework:spring-core", version.ref = "spring" }
 spring-context = { module = "org.springframework:spring-context", version.ref = "spring" }
 vavr = { module = "io.vavr:vavr", version.ref = "vavr" }
+httpclient = { module = "org.apache.httpcomponents:httpclient", version.ref = "httpclient" }
 
 [bundles]
 
