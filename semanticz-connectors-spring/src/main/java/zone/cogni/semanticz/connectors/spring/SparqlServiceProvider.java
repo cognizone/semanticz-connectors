@@ -1,8 +1,26 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 package zone.cogni.semanticz.connectors.spring;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import zone.cogni.semanticz.connectors.CognizoneException;
 import zone.cogni.semanticz.connectors.fuseki.FusekiConfig;
 import zone.cogni.semanticz.connectors.fuseki.FusekiSparqlService;
 import zone.cogni.semanticz.connectors.general.Config;
@@ -26,9 +44,11 @@ public class SparqlServiceProvider {
   public SparqlService createSparqlService(Enum enumValue) {
     String base = configPrefix + enumValue.name() + ".";
 
-    String type = CognizoneException.failIfBlank(environment.getProperty(base + "type"), "Type property not found: " + base + "type");
-
-    switch (type) {
+    String value = environment.getProperty(base + "type");
+    if (value == null || value.isBlank()) {
+      throw new RuntimeException("Type property not found: " + base + "type");
+    }
+    switch (value) {
       case "virtuoso":
         return new VirtuosoSparqlService(createDefaultConfig(base));
       case "fuseki":
@@ -40,7 +60,7 @@ public class SparqlServiceProvider {
       case "stardog":
         return new StardogSparqlService(createDefaultConfig(base));
       default:
-        throw new CognizoneException("SparqlService type " + type + " unknown.");
+        throw new RuntimeException(String.format("SparqlService type %s unknown.", value));
     }
   }
 

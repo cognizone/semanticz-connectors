@@ -33,39 +33,28 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import zone.cogni.semanticz.connectors.general.SparqlService;
+import zone.cogni.semanticz.connectors.general.RdfStoreService;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.Objects;
-import java.util.function.Function;
 
 import static org.apache.jena.rdf.model.ResourceFactory.createResource;
 
 /**
- * Abstract test class for testing implementations of {@link SparqlService}.
+ * Abstract test class for testing implementations of {@link RdfStoreService}.
  *
- * @param <T> the SparqlService implementation to test
+ * @param <T> the RdfStoreService implementation to test
  */
-public abstract class AbstractSparqlServiceTest<T extends SparqlService> {
+public abstract class AbstractRdfStoreServiceTest<T extends RdfStoreService> {
 
   /**
-   * SparqlService under test.
+   * RdfStoreService under test.
    */
   private T sut;
 
   protected abstract T createSUT();
-
-  protected abstract void disposeSUT(T sparqlService);
-
-  protected T getSUT() {
-    return sut;
-  }
 
   private static String r(final String localName) {
     return "https://example.org/" + localName;
@@ -84,13 +73,13 @@ public abstract class AbstractSparqlServiceTest<T extends SparqlService> {
     final Iterator<String> graphs = dataset.listNames();
     while (graphs.hasNext()) {
       final String name = graphs.next();
-      sut.updateGraph(name, dataset.getNamedModel(name));
+      sut.addData(dataset.getNamedModel(name), name);
     }
   }
 
   @AfterEach
   public void destroy() {
-    disposeSUT(sut);
+    sut.close();
   }
 
   @Test
@@ -112,36 +101,6 @@ public abstract class AbstractSparqlServiceTest<T extends SparqlService> {
             "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> DELETE DATA { GRAPH <https://example.org/m1> { <https://example.org/c1> rdfs:subClassOf <https://example.org/c3> } }");
     Assertions.assertFalse(sut.executeAskQuery(
             "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> ASK { GRAPH <https://example.org/m1> { <https://example.org/c1> rdfs:subClassOf <https://example.org/c3> } }"));
-  }
-
-  @Test
-  public void testUploadTtlFileWorksCorrectly() throws IOException {
-    final Path dir = Files.createTempDirectory("testUploadTtlFileWorksCorrectly-");
-    final String fileName = "testUploadTtlFileWorksCorrectly.ttl";
-    final File file = Files.createTempFile(dir, fileName, ".ttl").toFile();
-    try {
-      final Model model = ModelFactory.createDefaultModel();
-      model.add(createResource(r("c1")), RDFS.comment, "comment");
-      model.write(new FileWriter(file), "TURTLE");
-
-      final String checkTripleExists = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> ASK { GRAPH ?g { <https://example.org/c1> rdfs:comment 'comment' } }";
-
-      Assertions.assertFalse(sut.executeAskQuery(checkTripleExists));
-      sut.uploadTtlFile(file);
-      Assertions.assertTrue(sut.executeAskQuery(checkTripleExists));
-    } finally {
-      file.delete();
-    }
-  }
-
-  @Test
-  public void testUploadTtlFileThrowsRuntimeExceptionIfTheFileWasNotFound() {
-    Assertions.assertThrows(RuntimeException.class,
-            () -> {
-              final File file = File.createTempFile("fusekisparqlservicetest-", ".ttl");
-              file.delete();
-              sut.uploadTtlFile(file);
-            });
   }
 
   @Test
@@ -170,14 +129,14 @@ public abstract class AbstractSparqlServiceTest<T extends SparqlService> {
                     + "> { <https://example.org/c1> rdfs:label 'Class 1 - label 2' . <https://example.org/c1> rdfs:label 'Class 1 - label 3' . <https://example.org/c1> rdfs:label 'Class 1' } }";
 
     Assertions.assertFalse(sut.executeAskQuery(check));
-    sut.updateGraph(r("m2"), model);
+    sut.addData(model, r("m2"));
     Assertions.assertTrue(sut.executeAskQuery(check));
   }
 
   @Test
   public void testSelectQueryReturnsResultsFromRespectiveGraphs() {
     final ResultSet result = sut.executeSelectQuery(
-            "SELECT * { GRAPH ?g { ?s ?p ?o } FILTER (?g in (<https://example.org/m1>, <https://example.org/m2>))}", Function.identity());
+            "SELECT * { GRAPH ?g { ?s ?p ?o } FILTER (?g in (<https://example.org/m1>, <https://example.org/m2>))}", resultSet -> resultSet);
 
     while (result.hasNext()) {
       result.next();
@@ -192,20 +151,14 @@ public abstract class AbstractSparqlServiceTest<T extends SparqlService> {
   }
 
   @Test
-  public void testIsEmptyGraphOfNamedGraphReturnsTrueWheneverNoTripleExistsThere() {
-    final boolean isEmpty = sut.isEmptyGraph("https://example.org/m3");
-    Assertions.assertTrue(isEmpty);
+  public void testGraphExistsOfNamedGraphReturnsFalseWheneverNoTripleExistsThere() {
+    final boolean exists = sut.graphExists("https://example.org/m3");
+    Assertions.assertFalse(exists);
   }
 
   @Test
-  public void testIsEmptyGraphOfNamedGraphReturnsTrueWheneverATripleExists() {
-    final boolean isEmpty = sut.isEmptyGraph("https://example.org/m2");
-    Assertions.assertFalse(isEmpty);
-  }
-
-  @Test
-  public void testIsEmptyGraphOfDefaultGraphReturnsTrueWheneverNoTripleExistsThere() {
-    final boolean isEmpty = sut.isEmptyGraph(null );
-    Assertions.assertTrue(isEmpty);
+  public void testGraphExistsOfNamedGraphReturnsTrueWheneverATripleExistsThere() {
+    final boolean exists = sut.graphExists("https://example.org/m2");
+    Assertions.assertFalse(exists);
   }
 }

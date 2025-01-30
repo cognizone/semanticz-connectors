@@ -1,3 +1,22 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 package zone.cogni.semanticz.connectors.utils;
 
 import org.apache.commons.codec.binary.Base64;
@@ -29,6 +48,9 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
+
+import static zone.cogni.semanticz.connectors.utils.Constants.APPLICATION_SPARQL_QUERY;
+import static zone.cogni.semanticz.connectors.utils.Constants.CONTENT_TYPE;
 
 /**
  * Utility functions for working with the Apache HttpClient.
@@ -95,7 +117,7 @@ public class ApacheHttpClientUtils {
    * @return ResultSet language (XML/JSON)
    */
   private static Lang getResultSetLanguage(final HttpResponse response, final String acceptHeader) {
-    String actualContentType = response.getFirstHeader(HttpHeaders.CONTENT_TYPE).getValue();
+    String actualContentType = response.getFirstHeader(CONTENT_TYPE).getValue();
     actualContentType = removeCharset(actualContentType);
 
     // If the server fails to return a Content-Type then we will assume
@@ -122,7 +144,7 @@ public class ApacheHttpClientUtils {
   private static HttpPost createPost(final String sparqlServiceUrl, final String acceptHeader,
       final String username, final String password, final boolean addBasicAuth) {
     final HttpPost httpPost = new HttpPost(sparqlServiceUrl);
-    httpPost.setHeader(HttpHeaders.CONTENT_TYPE, "application/sparql-query");
+    httpPost.setHeader(CONTENT_TYPE, APPLICATION_SPARQL_QUERY);
     httpPost.setHeader(HttpHeaders.ACCEPT, acceptHeader);
     if (addBasicAuth) {
       httpPost.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + Base64.encodeBase64String(
@@ -149,7 +171,7 @@ public class ApacheHttpClientUtils {
     try (final CloseableHttpClient httpclient = ApacheHttpClientUtils.buildHttpClient(username,
         password)) {
       final HttpEntityEnclosingRequestBase httpPost = put ? new HttpPut(url) : new HttpPost(url);
-      httpPost.setHeader(HttpHeaders.CONTENT_TYPE, contentType);
+      httpPost.setHeader(CONTENT_TYPE, contentType);
       if (addBasicAuth) {
         httpPost.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + Base64.encodeBase64String(
             (username + ":" + password).getBytes(StandardCharsets.UTF_8)));

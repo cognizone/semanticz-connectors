@@ -19,18 +19,22 @@
 
 package zone.cogni.semanticz.connectors.virtuoso;
 
-public class VirtuosoOperationException extends RuntimeException {
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
+import zone.cogni.semanticz.connectors.general.Config;
+import zone.cogni.semanticz.connectors.utils.AbstractRdfStoreServiceTest;
 
-  private static final long serialVersionUID = -2605844968942214128L;
+import static zone.cogni.semanticz.connectors.virtuoso.Utils.PREFIX;
 
-  public VirtuosoOperationException() {
-  }
+@EnabledIfSystemProperty(named = PREFIX + "enabled", matches = "true")
+public class VirtuosoApacheHttpClientRdfStoreServiceTest extends AbstractRdfStoreServiceTest<VirtuosoApacheHttpClientRdfStoreService> {
 
-  public VirtuosoOperationException(Throwable cause) {
-    super(cause);
-  }
-
-  public VirtuosoOperationException(String shortMessage, String longMessage) {
-    super(shortMessage);
+  public VirtuosoApacheHttpClientRdfStoreService createSUT() {
+    final Config config = Utils.createTestConfig();
+    return new VirtuosoApacheHttpClientRdfStoreService(
+            config.getUrl(),
+            config.getUser(),
+            config.getPassword(),
+            config.isGraphCrudUseBasicAuth()
+    );
   }
 }

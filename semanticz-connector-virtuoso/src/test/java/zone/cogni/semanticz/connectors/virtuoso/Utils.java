@@ -17,24 +17,23 @@
  * under the License.
  */
 
-package zone.cogni.semanticz.connectors.spring;
+package zone.cogni.semanticz.connectors.virtuoso;
 
-import org.springframework.context.annotation.Import;
+import zone.cogni.semanticz.connectors.general.Config;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+public class Utils {
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-@Import(SparqlConfiguration.class)
+  static final String PREFIX = "semanticz.connector.virtuoso.tests.";
 
-public @interface EnableSparqlServer {
+  private static String getProperty(String property) {
+    return System.getProperty(PREFIX + property);
+  }
 
-  /**
-   * The prefix of the configuration.
-   */
-  String value();
-
+  public static Config createTestConfig() {
+    return new Config()
+            .setUrl(getProperty("url"))
+            .setUser(getProperty("username"))
+            .setPassword(getProperty("password"))
+            .setGraphCrudUseBasicAuth(false);
+  }
 }

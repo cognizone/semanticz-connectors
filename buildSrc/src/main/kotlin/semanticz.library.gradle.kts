@@ -58,6 +58,7 @@ tasks.register("qualityCheck") {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+    jvmArgs = System.getProperties().filter { it.key.toString().startsWith("semanticz.") }.entries.map { "-D${it.key}=${it.value}" }
     finalizedBy(tasks.jacocoTestReport)
 }
 
