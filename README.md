@@ -33,7 +33,7 @@ The project structure is as follows:
 ./gradlew semanticz-connector-virtuoso:test -Dsemanticz.connector.virtuoso.tests.enabled=true -Dsemanticz.connector.virtuoso.tests.url=http://localhost:8890/sparql-auth -Dsemanticz.connector.virtuoso.tests.username=dba -Dsemanticz.connector.virtuoso.tests.password=dba 
 ```
 
-- GraphDB (set the properties accordingly)
+- GraphDB (set the properties accordingly - note that the repository needs to be configured in GraphDB and the user needs to have R/W rights to it)
 ```bash
 ./gradlew semanticz-connector-graphdb:test -Dsemanticz.connector.graphdb.tests.enabled=true -Dsemanticz.connector.graphdb.tests.url=http://localhost:7200 -Dsemanticz.connector.graphdb.tests.repository=test -Dsemanticz.connector.graphdb.tests.username=test -Dsemanticz.connector.graphdb.tests.password=test 
 ```
