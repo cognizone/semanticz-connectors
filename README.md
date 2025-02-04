@@ -7,7 +7,8 @@ The project structure is as follows:
 - `semanticz-connectors-common` - common utilities and interfaces used by the individual connectors
 - `semanticz-connectors-spring` - integration to Spring, allowing to fetch a connector as a Spring bean
 - individual connectors in `semanticz-connector-` modules:
-  - `semanticz-connector-fuseki` - `SparqlService`-based implementation  
+  - `semanticz-connector-neptune` - `SparqlService` implementation, `RdfStoreService` implementations
+  - `semanticz-connector-fuseki` - `SparqlService`-based implementation
   - `semanticz-connector-graphdb` - `SparqlService`-based implementation  
   - `semanticz-connector-stardog` - `SparqlService`-based implementation  
   - `semanticz-connector-jenamemory` - `SparqlService`-based implementation, `RdfStoreService` implementations  
