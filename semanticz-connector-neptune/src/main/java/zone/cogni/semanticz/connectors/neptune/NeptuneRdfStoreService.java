@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import zone.cogni.sem.jena.template.JenaResultSetHandler;
 import zone.cogni.semanticz.connectors.general.RdfStoreService;
 
+@Deprecated
 public class NeptuneRdfStoreService implements RdfStoreService {
 
     private static final Logger log = LoggerFactory.getLogger(NeptuneRdfStoreService.class);
@@ -120,7 +121,7 @@ public class NeptuneRdfStoreService implements RdfStoreService {
         executeUpdateQuery(deleteAllQuery);
     }
 
-    private RDFConnection getConnection() {
+    protected RDFConnection getConnection() {
         return RDFConnectionRemote.newBuilder()
                                   .destination(sparqlEndpoint)
                                   .queryEndpoint(sparqlEndpoint)

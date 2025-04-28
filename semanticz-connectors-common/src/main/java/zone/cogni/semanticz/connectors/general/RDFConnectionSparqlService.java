@@ -46,7 +46,9 @@ public abstract class RDFConnectionSparqlService implements SparqlService {
    *
    * @return RDFConnection instance.
    */
-  protected abstract RDFConnection getConstructConnection();
+  protected RDFConnection getConstructConnection() {
+    return getConnection(); // Default implementation for triplestores with consistent connections
+  }
 
   @Override
   public void uploadTtlFile(File file) {

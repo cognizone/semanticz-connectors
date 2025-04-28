@@ -21,8 +21,14 @@ package zone.cogni.semanticz.connectors.general;
 
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.function.Function;
 
 /**
@@ -32,7 +38,26 @@ import java.util.function.Function;
  */
 public interface SparqlService {
 
-  void uploadTtlFile(File file);
+  Logger log = LoggerFactory.getLogger(SparqlService.class);
+
+  /**
+   * Uploads a TTL file to the default graph.
+   * Deprecated: use #replaceGraph(String, Model) instead.
+   *
+   * @param file
+   */
+  @Deprecated
+  default void uploadTtlFile(File file) {
+    try (InputStream in = new FileInputStream(file)) {
+      Model model = ModelFactory.createDefaultModel();
+      model.read(in, null, "TURTLE");
+      updateGraph(null, model);
+    }
+    catch (IOException e) {
+      log.error("Error reading TTL file", e);
+      throw new RuntimeException(e);
+    }
+  }
 
   /**
    * Executes SPARQL CONSTRUCT query and returns the result as a Model.

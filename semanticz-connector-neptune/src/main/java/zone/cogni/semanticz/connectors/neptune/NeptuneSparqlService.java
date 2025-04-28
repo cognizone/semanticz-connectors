@@ -7,6 +7,7 @@ import org.apache.jena.rdfconnection.RDFConnection;
 import org.apache.jena.rdfconnection.RDFConnectionRemote;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import zone.cogni.semanticz.connectors.general.RDFConnectionSparqlService;
 import zone.cogni.semanticz.connectors.general.SparqlService;
 
 import java.io.File;
@@ -15,7 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.function.Function;
 
-public class NeptuneSparqlService implements SparqlService {
+public class NeptuneSparqlService extends RDFConnectionSparqlService implements SparqlService {
 
     private static final Logger log = LoggerFactory.getLogger(NeptuneSparqlService.class);
 
@@ -28,19 +29,6 @@ public class NeptuneSparqlService implements SparqlService {
         }
         this.sparqlEndpoint = baseUrl + "/sparql";
         this.gspEndpoint = baseUrl + "/sparql/gsp";
-    }
-
-    @Override
-    public void uploadTtlFile(File file) {
-        try (InputStream in = new FileInputStream(file)) {
-            Model model = ModelFactory.createDefaultModel();
-            model.read(in, null, "TURTLE");
-            upload(model, null);
-        }
-        catch (IOException e) {
-            log.error("Error reading TTL file", e);
-            throw new RuntimeException(e);
-        }
     }
 
     @Override
@@ -81,20 +69,6 @@ public class NeptuneSparqlService implements SparqlService {
         }
     }
 
-    public void upload(Model model, String graphUri) {
-        try (RDFConnection conn = getConnection()) {
-            if (graphUri == null || graphUri.isEmpty()) {
-                conn.load(model);
-            } else {
-                conn.load(graphUri, model);
-            }
-        }
-        catch (Exception e) {
-            log.error("Error uploading model to graph {} in Neptune", graphUri, e);
-            throw new RuntimeException(e);
-        }
-    }
-
     @Override
     public <R> R executeSelectQuery(String query, Function<ResultSet, R> resultHandler) {
         Query parsedQuery = QueryFactory.create(query, Syntax.syntaxARQ);
@@ -117,10 +91,20 @@ public class NeptuneSparqlService implements SparqlService {
 
     @Override
     public void updateGraph(String graphUri, Model model) {
-        upload(model, graphUri);
+        try (RDFConnection conn = getConnection()) {
+            if (graphUri == null || graphUri.isEmpty()) {
+                conn.load(model);
+            } else {
+                conn.load(graphUri, model);
+            }
+        }
+        catch (Exception e) {
+            log.error("Error uploading model to graph {} in Neptune", graphUri, e);
+            throw new RuntimeException(e);
+        }
     }
 
-    private RDFConnection getConnection() {
+    protected RDFConnection getConnection() {
         return RDFConnectionRemote.newBuilder()
                                   .destination(sparqlEndpoint)
                                   .queryEndpoint(sparqlEndpoint)
