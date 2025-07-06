@@ -209,7 +209,7 @@ public class GraphDBRdfStoreService implements RdfStoreService {
 
     @Override
     public void close() {
-        super.close();
+        RdfStoreService.super.close();
     }
 
     private void executeHttpRequest(HttpRequest request, int... expectedCodes) {
