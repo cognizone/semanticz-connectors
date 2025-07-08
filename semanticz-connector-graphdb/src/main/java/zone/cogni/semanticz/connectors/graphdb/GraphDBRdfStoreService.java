@@ -45,6 +45,8 @@ import java.util.Objects;
 public class GraphDBRdfStoreService implements RdfStoreService {
 
     private static final Logger log = LoggerFactory.getLogger(GraphDBRdfStoreService.class);
+    private static final String HTTP_METHOD_PUT = "PUT";
+    private static final String HTTP_METHOD_POST = "POST";
 
     private final GraphDBConfig config;
     private volatile HttpClient httpClient;
@@ -87,50 +89,57 @@ public class GraphDBRdfStoreService implements RdfStoreService {
         addData(model, null);   // default graph
     }
 
-    @Override
-    public void addData(Model model, String graphUri) {
-        Objects.requireNonNull(model, "model must not be null");
-
+    private String modelToTurtle(Model model) {
         StringWriter writer = new StringWriter();
         model.write(writer, "ttl");
-        String turtle = writer.toString();
+        return writer.toString();
+    }
 
+    private URI buildEndpoint(String graphUri) {
         String endpoint = config.getSparqlUpdateEndpoint();
         if (StringUtils.isNotBlank(graphUri)) {
             String encCtx = URLEncoder.encode("<" + graphUri + ">", StandardCharsets.UTF_8);
             endpoint = endpoint + "?context=" + encCtx;
         }
+        return URI.create(endpoint);
+    }
 
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(endpoint))
-                .header("Content-Type", Lang.TURTLE.getHeaderString()) // text/turtle
-                .POST(HttpRequest.BodyPublishers.ofString(turtle, StandardCharsets.UTF_8))
-                .build();
+    private void sendData(Model model, String graphUri, String httpMethod) {
+        String turtle = modelToTurtle(model);
+        URI endpoint = buildEndpoint(graphUri);
+
+        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
+                .uri(endpoint)
+                .header("Content-Type", Lang.TURTLE.getHeaderString()); // text/turtle
+
+        HttpRequest request;
+        if (HTTP_METHOD_PUT.equals(httpMethod)) {
+            request = requestBuilder.PUT(HttpRequest.BodyPublishers.ofString(turtle, StandardCharsets.UTF_8)).build();
+        } else {
+            request = requestBuilder.POST(HttpRequest.BodyPublishers.ofString(turtle, StandardCharsets.UTF_8)).build();
+        }
 
         executeHttpRequest(request, 200, 202, 204);
-        log.debug("Uploaded {} triples to {}", model.size(), graphUri == null ? "default graph" : graphUri);
+        
+        String graphName = graphUri == null ? "default graph" : graphUri;
+        if (HTTP_METHOD_PUT.equals(httpMethod)) {
+            log.debug("Graph {} successfully replaced with {} triples.", graphName, model.size());
+        } else {
+            log.debug("Uploaded {} triples to {}", model.size(), graphName);
+        }
+    }
+
+    @Override
+    public void addData(Model model, String graphUri) {
+        Objects.requireNonNull(model, "model must not be null");
+        sendData(model, graphUri, HTTP_METHOD_POST);
     }
 
     @Override
     public void replaceGraph(String graphUri, Model model) {
         Objects.requireNonNull(graphUri, "graphUri must not be null");
         Objects.requireNonNull(model, "model must not be null");
-
-        StringWriter writer = new StringWriter();
-        model.write(writer, "ttl");
-        String turtle = writer.toString();
-
-        String encodedCtx = URLEncoder.encode("<" + graphUri + ">", StandardCharsets.UTF_8);
-        URI endpoint = URI.create(config.getSparqlUpdateEndpoint() + "?context=" + encodedCtx);
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(endpoint)
-                .header("Content-Type", Lang.TURTLE.getHeaderString())    // text/turtle
-                .PUT(HttpRequest.BodyPublishers.ofString(turtle, StandardCharsets.UTF_8))
-                .build();
-
-        executeHttpRequest(request, 200, 202, 204);
-        log.debug("Graph {} successfully replaced with {} triples.", graphUri, model.size());
+        sendData(model, graphUri, HTTP_METHOD_PUT);
     }
 
     @Override

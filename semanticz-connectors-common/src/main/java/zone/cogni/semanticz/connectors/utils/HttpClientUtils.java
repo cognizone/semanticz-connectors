@@ -25,10 +25,12 @@ import org.slf4j.LoggerFactory;
 
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
+import java.net.ProxySelector;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.text.MessageFormat;
+import java.time.Duration;
 
 /**
  * Utility methods for JDK11 HttpClient.
@@ -59,6 +61,45 @@ public class HttpClientUtils {
       log.error("Endpoint credentials not properly configured");
     }
     return httpClientBuilder;
+  }
+
+  /**
+   * Creates a new HttpClientBuilder with additional configuration options.
+   * If both username and password are supplied, basic authentication is configured.
+   *
+   * @param username username (optional)
+   * @param password password (optional)
+   * @param connectTimeout connection timeout (optional, defaults to 5 seconds if null)
+   * @param followRedirects whether to follow redirects
+   * @param useSystemProxy whether to use system proxy settings
+   * @return HttpClient.Builder
+   */
+  public static HttpClient.Builder createHttpClientBuilder(final String username,
+      final String password,
+      final Duration connectTimeout,
+      final boolean followRedirects,
+      final boolean useSystemProxy) {
+    final HttpClient.Builder builder = HttpClient.newBuilder()
+        .connectTimeout(connectTimeout != null ? connectTimeout : Duration.ofSeconds(5))
+        .followRedirects(followRedirects ? HttpClient.Redirect.NORMAL : HttpClient.Redirect.NEVER);
+
+    if (useSystemProxy) {
+      builder.proxy(ProxySelector.getDefault());
+    }
+
+    if (StringUtils.isNoneBlank(username, password)) {
+      builder.authenticator(new Authenticator() {
+        @Override
+        protected PasswordAuthentication getPasswordAuthentication() {
+          return new PasswordAuthentication(username, password.toCharArray());
+        }
+      });
+    } else if (!StringUtils.isAllBlank(username, password)) {
+      log.error("Endpoint credentials are incomplete: user='{}', password provided='{}'",
+          username, StringUtils.isNotBlank(password));
+    }
+
+    return builder;
   }
 
   /**

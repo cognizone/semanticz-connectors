@@ -28,6 +28,7 @@ import org.apache.jena.sparql.exec.http.QueryExecutionHTTPBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import zone.cogni.semanticz.connectors.general.SparqlService;
+import zone.cogni.semanticz.connectors.utils.HttpClientUtils;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -43,6 +44,9 @@ import java.util.function.Function;
 public class GraphDBSparqlService implements SparqlService {
 
     private static final Logger log = LoggerFactory.getLogger(GraphDBSparqlService.class);
+    private static final String HTTP_METHOD_PUT = "PUT";
+    private static final String HTTP_METHOD_POST = "POST";
+    
     private final GraphDBConfig config;
     private HttpClient httpClient;
 
@@ -53,25 +57,14 @@ public class GraphDBSparqlService implements SparqlService {
     private synchronized HttpClient getHttpClient() {
         if (httpClient != null) return httpClient;
 
-        HttpClient.Builder builder = HttpClient.newBuilder()
-                .connectTimeout(Duration.ofSeconds(5))
-                .followRedirects(HttpClient.Redirect.NORMAL)
-                .proxy(ProxySelector.getDefault());
-
-        if (StringUtils.isNoneBlank(config.getUser(), config.getPassword())) {
-            builder.authenticator(new Authenticator() {
-                @Override
-                protected PasswordAuthentication getPasswordAuthentication() {
-                    return new PasswordAuthentication(
-                            config.getUser(),
-                            config.getPassword().toCharArray());
-                }
-            });
-        } else if (!StringUtils.isAllBlank(config.getUser(), config.getPassword())) {
-            log.error("Endpoint credentials not properly configured");
-        }
-
-        httpClient = builder.build();
+        httpClient = HttpClientUtils.createHttpClientBuilder(
+                config.getUser(),
+                config.getPassword(),
+                Duration.ofSeconds(config.getConnectTimeoutSeconds()),
+                true,  // followRedirects
+                true   // useSystemProxy
+        ).build();
+        
         return httpClient;
     }
 
@@ -104,22 +97,23 @@ public class GraphDBSparqlService implements SparqlService {
         executeHttpRequest(request, 204);
     }
 
-    @Override
-    public <R> R executeSelectQuery(String query, Function<ResultSet, R> resultHandler) {
-        try (QueryExecution queryExecution = QueryExecutionHTTP.service(config.getSparqlEndpoint())
+    private QueryExecution createQueryExecution(String query) {
+        return QueryExecutionHTTP.service(config.getSparqlEndpoint())
                 .queryString(query)
                 .httpClient(getHttpClient())
-                .build()) {
+                .build();
+    }
+
+    @Override
+    public <R> R executeSelectQuery(String query, Function<ResultSet, R> resultHandler) {
+        try (QueryExecution queryExecution = createQueryExecution(query)) {
             return resultHandler.apply(queryExecution.execSelect());
         }
     }
 
     @Override
     public boolean executeAskQuery(String askQuery) {
-        try (QueryExecution queryExecution = QueryExecutionHTTP.service(config.getSparqlEndpoint())
-                .queryString(askQuery)
-                .httpClient(getHttpClient())
-                .build()) {
+        try (QueryExecution queryExecution = createQueryExecution(askQuery)) {
             return queryExecution.execAsk();
         }
     }
@@ -130,34 +124,33 @@ public class GraphDBSparqlService implements SparqlService {
         executeUpdateQuery("clear graph <" + graphUri + ">");
     }
 
-    @Override
-    public void updateGraph(String graphUri, Model model) {
-        Objects.requireNonNull(graphUri, "graphUri must not be null");
-        Objects.requireNonNull(model, "model must not be null");
-
-        if (model.isEmpty()) {
-            log.debug("addData called with an empty model – nothing to do.");
-            return;
-        }
-
+    private String modelToTurtle(Model model) {
         StringWriter writer = new StringWriter();
         model.write(writer, "ttl");
-        String turtle = writer.toString();
+        return writer.toString();
+    }
 
-        String base = config.getSparqlUpdateEndpoint();      // …/statements
-        URI endpoint;
+    private URI buildGraphEndpoint(String graphUri, boolean isReplace) {
+        String base = config.getSparqlUpdateEndpoint();
         if (StringUtils.isBlank(graphUri)) {
-            endpoint = URI.create(base);                       // default graph
+            return URI.create(base);  // default graph
         } else {
             String encCtx = URLEncoder.encode("<" + graphUri + ">", StandardCharsets.UTF_8);
-            endpoint = URI.create(base + "?context=" + encCtx); // named graph
+            return URI.create(base + "?context=" + encCtx);
         }
+    }
 
-        HttpRequest request = HttpRequest.newBuilder()
+    private void sendGraphData(URI endpoint, String turtleContent, String httpMethod, String graphUri, long modelSize) {
+        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
                 .uri(endpoint)
-                .header("Content-Type", Lang.TURTLE.getHeaderString()) // text/turtle
-                .POST(HttpRequest.BodyPublishers.ofString(turtle, StandardCharsets.UTF_8))
-                .build();
+                .header("Content-Type", Lang.TURTLE.getHeaderString()); // text/turtle
+
+        HttpRequest request;
+        if (HTTP_METHOD_PUT.equals(httpMethod)) {
+            request = requestBuilder.PUT(HttpRequest.BodyPublishers.ofString(turtleContent, StandardCharsets.UTF_8)).build();
+        } else {
+            request = requestBuilder.POST(HttpRequest.BodyPublishers.ofString(turtleContent, StandardCharsets.UTF_8)).build();
+        }
 
         try {
             HttpResponse<Void> resp = getHttpClient()
@@ -165,16 +158,39 @@ public class GraphDBSparqlService implements SparqlService {
 
             int code = resp.statusCode();
             if (code != 200 && code != 202 && code != 204) {
-                throw new RuntimeException("Failed to add data. HTTP " + code);
+                String action = HTTP_METHOD_PUT.equals(httpMethod) ? "replace" : "update";
+                log.error("Failed to {} graph. HTTP {} {}", action, code, resp);
+                throw new RuntimeException("Failed to " + action + " graph. HTTP " + code);
             }
-            log.debug("Uploaded {} triples to {}", model.size(),
-                    StringUtils.defaultIfBlank(graphUri, "default graph"));
+            
+            String graphName = StringUtils.defaultIfBlank(graphUri, "default graph");
+            if (HTTP_METHOD_PUT.equals(httpMethod)) {
+                log.debug("Graph {} successfully replaced with {} triples (HTTP {})", graphName, modelSize, code);
+            } else {
+                log.debug("Uploaded {} triples to {}", modelSize, graphName);
+            }
 
         } catch (IOException | InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new RuntimeException("I/O error while uploading triples", e);
+            String action = HTTP_METHOD_PUT.equals(httpMethod) ? "replacing" : "uploading to";
+            log.error("I/O error while {} graph", action, e);
+            throw new RuntimeException("I/O error while " + action + " graph", e);
         }
-        log.debug("Added {} triples to existing graph {}", model.size(), graphUri);
+    }
+
+    @Override
+    public void updateGraph(String graphUri, Model model) {
+        Objects.requireNonNull(graphUri, "graphUri must not be null");
+        Objects.requireNonNull(model, "model must not be null");
+
+        if (model.isEmpty()) {
+            log.debug("updateGraph called with an empty model – nothing to do.");
+            return;
+        }
+
+        String turtle = modelToTurtle(model);
+        URI endpoint = buildGraphEndpoint(graphUri, false);
+        sendGraphData(endpoint, turtle, HTTP_METHOD_POST, graphUri, model.size());
     }
 
     private void executeHttpRequest(HttpRequest request, int expectedCode) {
@@ -207,37 +223,14 @@ public class GraphDBSparqlService implements SparqlService {
 
     @Override
     public void replaceGraph(String graphUri, Model model) {
-        StringWriter writer = new StringWriter();
-        model.write(writer, "ttl");
-        String turtleContent = writer.toString();
+        Objects.requireNonNull(graphUri, "graphUri must not be null");
+        Objects.requireNonNull(model, "model must not be null");
 
         log.info("Replacing graph {} with single PUT request", graphUri);
 
-        String encoded = URLEncoder.encode("<" + graphUri + ">", StandardCharsets.UTF_8);
-        URI endpoint = URI.create(config.getSparqlUpdateEndpoint() + "?context=" + encoded);
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(endpoint)
-                .header("Content-Type", Lang.TURTLE.getHeaderString())   // "text/turtle"
-                .PUT(HttpRequest.BodyPublishers.ofString(turtleContent, StandardCharsets.UTF_8))
-                .build();
-
-        try {
-            HttpResponse<Void> resp = getHttpClient()
-                    .send(request, HttpResponse.BodyHandlers.discarding());
-
-            int code = resp.statusCode();
-            if (code != 200 && code != 204 && code != 202) {
-                log.error("Failed to upload Turtle data. HTTP {} {}", code, resp);
-                throw new RuntimeException("Failed to upload TTL data. HTTP " + code);
-            }
-            log.debug("Graph {} successfully replaced (HTTP {})", graphUri, code);
-
-        } catch (IOException | InterruptedException e) {
-            Thread.currentThread().interrupt();               // preserve interrupt flag
-            log.error("Error replacing Turtle data to GraphDB", e);
-            throw new RuntimeException("I/O error during graph replacement", e);
-        }
+        String turtleContent = modelToTurtle(model);
+        URI endpoint = buildGraphEndpoint(graphUri, true);
+        sendGraphData(endpoint, turtleContent, HTTP_METHOD_PUT, graphUri, model.size());
     }
 
 }
