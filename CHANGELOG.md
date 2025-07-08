@@ -1,3 +1,6 @@
+next release
+- added GraphDB RdfStoreService implementation
+
 2.0.0
 - migration to Java 17 and Jena 5
 - added license headers
