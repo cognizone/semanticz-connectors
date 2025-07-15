@@ -30,6 +30,7 @@ import zone.cogni.semanticz.connectors.general.Config;
 public class GraphDBConfig extends Config {
 
   private String repository;
+  private Integer connectTimeoutSeconds = 5; // Default to 5 seconds
 
   public GraphDBConfig() {
   }

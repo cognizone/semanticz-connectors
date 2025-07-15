@@ -1,5 +1,8 @@
 .idea
 build
 .gradle
+<<<<<<< HEAD
 /.claude/settings.local.json
+=======
+>>>>>>> dcea6d6eb4dc1a11b9032fc4bd9308af0b0915e3
 /CLAUDE.md
