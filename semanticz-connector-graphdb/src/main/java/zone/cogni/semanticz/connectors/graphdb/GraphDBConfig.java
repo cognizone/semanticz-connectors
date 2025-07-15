@@ -29,27 +29,32 @@ import zone.cogni.semanticz.connectors.general.Config;
 @Accessors(chain = true)
 public class GraphDBConfig extends Config {
 
-  private String repository;
-  private Integer connectTimeoutSeconds = 5; // Default to 5 seconds
+    private String repository;
+    private Integer connectTimeoutSeconds = 5; // Default to 5 seconds
 
-  public GraphDBConfig() {
-  }
+    public GraphDBConfig() {
+    }
 
-  public GraphDBConfig(Config config) {
-    setUrl(config.getUrl());
-    setUser(config.getUser());
-    setPassword(config.getPassword());
-  }
+    public GraphDBConfig(Config config) {
+        setUrl(config.getUrl());
+        setUser(config.getUser());
+        setPassword(config.getPassword());
+    }
 
-  public String getSparqlEndpoint() {
-    return getUrl() + "/repositories/" + getRepository();
-  }
+    public String getSparqlEndpoint() {
+        return getUrl() + getRepositoryPath();
+    }
 
-  public String getSparqlUpdateEndpoint() {
-    return getSparqlEndpoint() + "/statements";
-  }
+    public String getGspEndpoint() {
+        return getRepositoryPath() + "/rdf-graphs/service";
+    }
 
-  public String getImportTextEndpoint() {
-    return getUrl() + "/rest/data/import/upload/" + getRepository() + "/text";
-  }
+    public String getSparqlUpdateEndpoint() {
+        return getSparqlEndpoint() + "/statements";
+    }
+
+    public String getRepositoryPath() {
+        return "/repositories/" + getRepository();
+    }
+
 }
