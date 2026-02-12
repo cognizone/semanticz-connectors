@@ -1,5 +1,6 @@
 2.0.1-SNAPSHOT
 - added GraphDB RDFConnection implementation
+- added RDF4J in-memory SparqlService
 
 2.0.0
 - migration to Java 17 and Jena 5
